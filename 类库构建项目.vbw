@@ -1,9 +1,10 @@
 TextBoxHelper = -280, 90, 709, 454, C
 TimeTicker = 0, 0, 0, 0, C
-Form1 = -162, 65, 833, 324, C, 22, 29, 1011, 393, C
-AdodbHelper = 26, 26, 913, 466, 
+Form1 = 75, 65, 1049, 549, , 22, 29, 1011, 393, C
+AdodbHelper = 26, 26, 913, 466, C
 Email = 0, 0, 0, 0, C
-SRegExp = 52, 52, 939, 492, 
-WebCode = 78, 78, 965, 518, 
-cFile = 104, 104, 1084, 468, 
-AudioPlay = 0, 0, 887, 440, Z
+SRegExp = 52, 52, 939, 492, C
+WebCode = 78, 78, 965, 518, C
+cFile = 104, 104, 1084, 468, C
+AudioPlay = 0, 0, 887, 440, C
+ArrayHelper = 26, 26, 905, 458, 
