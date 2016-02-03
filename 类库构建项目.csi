@@ -1,0 +1,21 @@
+[历史]
+1=#P0#=mb	#P1#=cmdDelFile_Click	#P2#=类库构建项目/Form1/cmdDelFile_Click	#P3#=	#P4#=	#P5#=MembEventProcPrivate	#P6#=20150118170152	#P7#=0	#P8#=2	.
+2=#P0#=mb	#P1#=Delete	#P2#=类库构建项目/cFile/Delete	#P3#=	#P4#=	#P5#=MembMethodPrivate	#P6#=20150118165918	#P7#=0	#P8#=-7	.
+3=#P0#=mb	#P1#=DeleteF	#P2#=类库构建项目/cFile/DeleteF	#P3#=	#P4#=	#P5#=MembMethodPrivate	#P6#=20150118153654	#P7#=0	#P8#=0	.
+4=#P0#=mb	#P1#=FileExists	#P2#=类库构建项目/cFile/FileExists	#P3#=	#P4#=	#P5#=MembMethodPrivate	#P6#=20150118165656	#P7#=0	#P8#=-5	.
+5=#P0#=mb	#P1#=cmdReadFile_Click	#P2#=类库构建项目/Form1/cmdReadFile_Click	#P3#=	#P4#=	#P5#=MembEventProcPrivate	#P6#=20150118151219	#P7#=0	#P8#=-1	.
+6=#P0#=mb	#P1#=ReadTextFile	#P2#=类库构建项目/cFile/ReadTextFile	#P3#=	#P4#=	#P5#=MembMethodPrivate	#P6#=20150118153050	#P7#=0	#P8#=-11	.
+7=#P0#=mb	#P1#=cmdAddNew_Click	#P2#=类库构建项目/Form1/cmdAddNew_Click	#P3#=	#P4#=	#P5#=MembEventProcPrivate	#P6#=20150118150807	#P7#=0	#P8#=1	.
+8=#P0#=mb	#P1#=cmdCommand1_Click	#P2#=类库构建项目/Form1/cmdCommand1_Click	#P3#=	#P4#=	#P5#=MembEventProcPrivate	#P6#=20150118150754	#P7#=0	#P8#=3	.
+9=#P0#=mb	#P1#=WriteToTextFile	#P2#=类库构建项目/cFile/WriteToTextFile	#P3#=	#P4#=	#P5#=MembMethodPrivate	#P6#=20150118151039	#P7#=0	#P8#=24	.
+10=#P0#=mb	#P1#=Class_Initialize	#P2#=类库构建项目/cFile/Class_Initialize	#P3#=	#P4#=	#P5#=MembEventProcPrivate	#P6#=20150118165609	#P7#=0	#P8#=-3	.
+11=#P0#=mb	#P1#=Length	#P2#=类库构建项目/TextBoxHelper/Length [Get]	#P3#=	#P4#=	#P5#=MembPropertyPrivate	#P6#=20150109233756	#P7#=0	#P8#=2	.
+12=#P0#=mb	#P1#=PointerToEnd	#P2#=类库构建项目/TextBoxHelper/PointerToEnd	#P3#=	#P4#=	#P5#=MembMethodPrivate	#P6#=20150109233657	#P7#=0	#P8#=-1	.
+13=#P0#=mb	#P1#=LocPointer	#P2#=类库构建项目/TextBoxHelper/LocPointer	#P3#=	#P4#=	#P5#=MembMethodPrivate	#P6#=20150109233633	#P7#=0	#P8#=0	.
+14=#P0#=mb	#P1#=SelAll	#P2#=类库构建项目/TextBoxHelper/SelAll	#P3#=	#P4#=	#P5#=MembMethodPrivate	#P6#=20150109233614	#P7#=0	#P8#=2	.
+15=#P0#=mb	#P1#=InitTextBox	#P2#=类库构建项目/TextBoxHelper/InitTextBox	#P3#=	#P4#=	#P5#=MembMethodPrivate	#P6#=20150109233603	#P7#=0	#P8#=-2	.
+16=#P0#=mb	#P1#=GetText	#P2#=类库构建项目/TextBoxHelper/GetText	#P3#=	#P4#=	#P5#=MembMethodPrivate	#P6#=20150109233556	#P7#=0	#P8#=-1	.
+17=#P0#=mb	#P1#=NumberOnly	#P2#=类库构建项目/TextBoxHelper/NumberOnly [Get]	#P3#=	#P4#=	#P5#=MembPropertyPrivate	#P6#=20150109222746	#P7#=0	#P8#=2	.
+18=#P0#=mb	#P1#=m_TextBox_KeyDown	#P2#=类库构建项目/TextBoxHelper/m_TextBox_KeyDown	#P3#=	#P4#=	#P5#=MembEventProcPrivate	#P6#=20150109222029	#P7#=0	#P8#=1	.
+19=#P0#=mb	#P1#=m_TextBox_KeyPress	#P2#=类库构建项目/TextBoxHelper/m_TextBox_KeyPress	#P3#=	#P4#=	#P5#=MembEventProcPrivate	#P6#=20150109221726	#P7#=0	#P8#=1	.
+20=#P0#=mb	#P1#=NumberOnly	#P2#=类库构建项目/TextBoxHelper/NumberOnly [Let]	#P3#=	#P4#=	#P5#=MembPropertyPrivate	#P6#=20150109221635	#P7#=0	#P8#=2	.
