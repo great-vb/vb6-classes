@@ -18,6 +18,14 @@ Begin VB.Form Form1
    ScaleHeight     =   3090
    ScaleWidth      =   4680
    StartUpPosition =   3  '窗口缺省
+   Begin VB.CommandButton btnNewTable 
+      Caption         =   "NewTable"
+      Height          =   375
+      Left            =   2760
+      TabIndex        =   6
+      Top             =   600
+      Width           =   975
+   End
    Begin VB.CommandButton btnArray 
       Caption         =   "数组赋值"
       Height          =   375
@@ -85,6 +93,12 @@ Private Sub btnArray_Click()
   Stop
 End Sub
 
+Private Sub btnNewTable_Click()
+  Dim dbc As New DbCreateHelper
+  dbc.SetDbFile "lover.mdb"
+  dbc.CreateTable "Users", "id:integer,name:string,age:integer,school:string,profile:text,created_at:date"
+End Sub
+
 Private Sub cmdAddNew_Click()
     mF.WriteLineToTextFile "1.txt", "2f"
 End Sub
@@ -99,4 +113,8 @@ End Sub
 
 Private Sub cmdReadFile_Click()
     txtOut.Text = mF.ReadTextFile("1.txt")
+End Sub
+
+Private Sub Form_Load()
+  Call btnNewTable_Click
 End Sub
