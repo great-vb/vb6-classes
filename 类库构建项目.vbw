@@ -1,7 +1,7 @@
 TextBoxHelper = -280, 90, 709, 454, C
 TimeTicker = 0, 0, 0, 0, C
 Form1 = 43, 137, 1017, 621, C, 22, 29, 1011, 393, C
-AdodbHelper = 61, 74, 948, 514, C
+AdodbHelper = 61, 74, 948, 514, 
 Email = 0, 0, 0, 0, C
 SRegExp = 52, 52, 939, 492, C
 WebCode = 78, 78, 965, 518, C
