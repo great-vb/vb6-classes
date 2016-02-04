@@ -165,7 +165,7 @@ Public Sub SetDbFile(ByVal FilePath As String)
 End Sub
 
 Public Sub CreateTable(ByVal TableName As String, ByVal FieldNames As String)
-  Dim tb As New Table
+  Dim tb As New ADOX.Table
   Dim fields() As String
   Dim field As String
   Dim i As Integer
@@ -198,4 +198,13 @@ Public Sub CreateTable(ByVal TableName As String, ByVal FieldNames As String)
     m_CT.Tables.Append tb
   End If
 
+End Sub
+
+Public Sub InitDbFromModels(ParamArray dbModels())
+  Dim model As DbModel
+  Dim i As Integer
+  For i = LBound(dbModels) To UBound(dbModels)
+    Set model = dbModels(i)
+    CreateTable model.TableName, model.TableFields
+  Next
 End Sub
