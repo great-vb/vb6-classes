@@ -18,6 +18,14 @@ Begin VB.Form Form1
    ScaleHeight     =   3090
    ScaleWidth      =   4680
    StartUpPosition =   3  '´°¿ÚÈ±Ê¡
+   Begin VB.CommandButton Command1 
+      Caption         =   "77"
+      Height          =   255
+      Left            =   3960
+      TabIndex        =   7
+      Top             =   240
+      Width           =   615
+   End
    Begin VB.CommandButton btnNewTable 
       Caption         =   "NewTable"
       Height          =   375
@@ -113,6 +121,12 @@ End Sub
 
 Private Sub cmdReadFile_Click()
     txtOut.Text = mF.ReadTextFile("1.txt")
+End Sub
+
+Private Sub Command1_Click()
+  Dim k As ClassBase
+  Set k = New ClassBase
+  MsgBox k.Counts("123")
 End Sub
 
 Private Sub Form_Load()
