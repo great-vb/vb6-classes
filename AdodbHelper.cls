@@ -134,7 +134,7 @@ End Property
 '</CSCM>
 Public Function ExecQuery(ByVal SqlStr As String) As ADODB.Recordset
 
-    Dim tempRes As New Recordset
+    Dim tempRes As New ADODB.Recordset
 
     Set m_Command = New ADODB.Command
     Call OpenConn
@@ -164,7 +164,7 @@ End Function
 Public Function ExecParamQuery(ByVal SqlStr As String, _
                                ParamArray Params()) As ADODB.Recordset
 
-    Dim tempRes As New Recordset
+    Dim tempRes As New ADODB.Recordset
 
     Dim i       As Long
 
@@ -343,7 +343,7 @@ Public Sub TransData(ByVal SourceDb As String, _
                      ByVal DestDb As String, _
                      ParamArray tableNames())
 
-    Dim tableName As Variant
+    Dim TableName As Variant
 
     m_Me.SetConnToFile SourceDb
 
@@ -353,9 +353,9 @@ Public Sub TransData(ByVal SourceDb As String, _
 
     End If
 
-    For Each tableName In tableNames
+    For Each TableName In tableNames
 
-        m_Me.ExecQuery "select * into [" & DestDb & "]." & tableName & " from " & tableName
+        m_Me.ExecQuery "select * into [" & DestDb & "]." & TableName & " from " & TableName
     Next
 
 End Sub
@@ -401,14 +401,14 @@ Public Function ExecParamQueryScalar(ByVal SqlStr As String, _
 
     Dim varResult As Variant
 
-    Dim tmpRes    As Recordset
+    Dim tmpRes    As ADODB.Recordset
 
     Set tmpRes = ExecParamQuery(SqlStr, Params(0))
 
     If tmpRes.RecordCount <= 0 Then
         Set ExecParamQueryScalar = Nothing
     Else
-        ExecParamQueryScalar = tmpRes.Fields(0).Value
+        ExecParamQueryScalar = tmpRes.fields(0).Value
     End If
 
     ReleaseRecordset tmpRes
@@ -431,14 +431,14 @@ Public Function ExecQueryScalar(ByVal SqlStr As String) As Variant
 
     Dim varResult As Variant
 
-    Dim tmpRes    As Recordset
+    Dim tmpRes    As ADODB.Recordset
 
     Set tmpRes = ExecQuery(SqlStr)
 
     If tmpRes.RecordCount <= 0 Then
         Set ExecQueryScalar = Nothing
     Else
-        ExecQueryScalar = tmpRes.Fields(0).Value
+        ExecQueryScalar = tmpRes.fields(0).Value
     End If
 
     ReleaseRecordset tmpRes
