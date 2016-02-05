@@ -167,6 +167,8 @@ Public Function ExecParamQuery(ByVal SqlStr As String, _
     Dim tempRes As New ADODB.Recordset
 
     Dim i       As Long
+    
+    Dim paramArr As Variant
 
     Set m_Command = New ADODB.Command
     '打开连接
@@ -174,11 +176,18 @@ Public Function ExecParamQuery(ByVal SqlStr As String, _
     m_Command.ActiveConnection = m_Conn
     m_Command.CommandText = SqlStr
     m_Command.CommandType = adCmdText
+    
+    '过滤嵌套情况
+    paramArr = Params
+    If VarType(Params(0)) >= vbArray Then
+      paramArr = Params(0)
+    End If
 
     '设置参数
     With m_Command
+    
 
-        For Each param In Params
+        For Each param In paramArr
 
             Dim Para As ADODB.Parameter
 
@@ -258,6 +267,8 @@ Public Function ExecParamNonQuery(ByVal SqlStr As String, ParamArray Params()) A
     Dim i            As Long
 
     Dim affectedRows As Long
+    
+    Dim paramArr As Variant
 
     Set m_Command = New ADODB.Command
     '打开连接
@@ -265,11 +276,15 @@ Public Function ExecParamNonQuery(ByVal SqlStr As String, ParamArray Params()) A
     m_Command.ActiveConnection = m_Conn
     m_Command.CommandText = SqlStr
     m_Command.CommandType = adCmdText
-
+    '过滤嵌套情况
+    paramArr = Params
+    If VarType(Params(0)) >= vbArray Then
+      paramArr = Params(0)
+    End If
     '设置参数
     With m_Command
 
-        For Each param In Params
+        For Each param In paramArr
 
             Dim Para As ADODB.Parameter
 
@@ -403,7 +418,7 @@ Public Function ExecParamQueryScalar(ByVal SqlStr As String, _
 
     Dim tmpRes    As ADODB.Recordset
 
-    Set tmpRes = ExecParamQuery(SqlStr, Params(0))
+    Set tmpRes = ExecParamQuery(SqlStr, Params)
 
     If tmpRes.RecordCount <= 0 Then
         Set ExecParamQueryScalar = Nothing
@@ -495,32 +510,32 @@ End Sub
 ' Parameters :       Value (Variant)
 '--------------------------------------------------------------------------------
 '</CSCM>
-Private Function GetVarType(ByRef Value As Variant) As DataTypeEnum
+Private Function GetVarType(ByRef Value As Variant) As ADODB.DataTypeEnum
 
     Dim k As New ADODB.Command
 
     Select Case VarType(Value)
 
         Case VbVarType.vbString
-            GetVarType = DataTypeEnum.adVarChar
+            GetVarType = ADODB.DataTypeEnum.adVarChar
 
         Case VbVarType.vbInteger
-            GetVarType = DataTypeEnum.adSmallInt
+            GetVarType = ADODB.DataTypeEnum.adSmallInt
 
         Case VbVarType.vbBoolean
-            GetVarType = DataTypeEnum.adBoolean
+            GetVarType = ADODB.DataTypeEnum.adBoolean
 
         Case VbVarType.vbCurrency
-            GetVarType = DataTypeEnum.adCurrency
+            GetVarType = ADODB.DataTypeEnum.adCurrency
 
         Case VbVarType.vbDate
-            GetVarType = DataTypeEnum.adDate
+            GetVarType = ADODB.DataTypeEnum.adDate
 
         Case 8209
-            GetVarType = DataTypeEnum.adLongVarBinary
+            GetVarType = ADODB.DataTypeEnum.adLongVarBinary
 
         Case Else
-            GetVarType = DataTypeEnum.adVariant
+            GetVarType = ADODB.DataTypeEnum.adVariant
     End Select
 
 End Function
