@@ -179,7 +179,7 @@ Public Function ExecParamQuery(ByVal SqlStr As String, _
     
     '过滤嵌套情况
     paramArr = Params
-    If VarType(Params(0)) >= vbArray Then
+    If VarType(Params(0)) = 8204 Then
       paramArr = Params(0)
     End If
 
@@ -278,7 +278,7 @@ Public Function ExecParamNonQuery(ByVal SqlStr As String, ParamArray Params()) A
     m_Command.CommandType = adCmdText
     '过滤嵌套情况
     paramArr = Params
-    If VarType(Params(0)) >= vbArray Then
+    If VarType(Params(0)) = 8204 Then
       paramArr = Params(0)
     End If
     '设置参数
