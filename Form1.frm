@@ -4,7 +4,7 @@ Begin VB.Form Form1
    ClientHeight    =   3090
    ClientLeft      =   60
    ClientTop       =   450
-   ClientWidth     =   4680
+   ClientWidth     =   5925
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,8 +16,16 @@ Begin VB.Form Form1
    EndProperty
    LinkTopic       =   "Form1"
    ScaleHeight     =   3090
-   ScaleWidth      =   4680
+   ScaleWidth      =   5925
    StartUpPosition =   3  '´°¿ÚÈ±Ê¡
+   Begin VB.CommandButton btnCArray 
+      Caption         =   "CArray"
+      Height          =   375
+      Left            =   3900
+      TabIndex        =   8
+      Top             =   600
+      Width           =   915
+   End
    Begin VB.CommandButton Command1 
       Caption         =   "77"
       Height          =   255
@@ -99,6 +107,14 @@ Private Sub btnArray_Click()
   aString = ah.StringArray("we are the world", "man in the mirror", "dangerous")
   bInteger = ah.IntegerArray(1, 2, 3, 4, 5)
   Stop
+End Sub
+
+Private Sub btnCArray_Click()
+  Dim arr As New CArray
+  arr.Add "sunrui", 26
+  arr.Add "sunrui8", "love"
+  MsgBox arr.Item("sunrui") & arr.Item("sunrui8")
+  
 End Sub
 
 Private Sub btnNewTable_Click()
