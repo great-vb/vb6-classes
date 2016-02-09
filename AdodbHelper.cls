@@ -13,10 +13,14 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Attribute VB_Ext_KEY = "SavedWithClassBuilder6" ,"Yes"
 Attribute VB_Ext_KEY = "Top_Level" ,"Yes"
+'////////说明////////
+'使用前，请先引用：Microsoft ActiveX Data Objects 2.5 Library
+'引用方式：工程→引用→Microsoft ActiveX Data Objects 2.5 Library
+
 
 '最后修改日期：2015年1月15日22:16:43
-'2015年1月15日22:19:23      全部重新格式化
-
+'2015年01月15日22:19:23   全部重新格式化
+'2016年02月09日15:33:17   更新部分Adodb缺失
 '成员变量：连接对象
 Private m_Conn       As ADODB.Connection
 
