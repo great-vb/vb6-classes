@@ -1,6 +1,6 @@
 TextBoxHelper = -280, 90, 709, 454, C
 TimeTicker = 0, 0, 0, 0, C
-Form1 = 43, 137, 1017, 621, C, 22, 29, 1011, 393, C
+Form1 = 43, 137, 1017, 621, Z, 22, 29, 1011, 393, C
 AdodbHelper = 61, 74, 948, 514, C
 Email = 0, 0, 0, 0, C
 SRegExp = 52, 52, 939, 492, C
@@ -11,3 +11,4 @@ ArrayHelper = 140, 117, 1019, 549, C
 DbCreateHelper = 89, 40, 968, 472, C
 Class1 = 164, 162, 1043, 594, C
 ClassBase = 104, 104, 983, 536, C
+CArray = 25, 25, 1043, 595, 
