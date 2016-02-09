@@ -18,13 +18,21 @@ Begin VB.Form Form1
    ScaleHeight     =   3090
    ScaleWidth      =   5925
    StartUpPosition =   3  '´°¿ÚÈ±Ê¡
+   Begin VB.CommandButton btnCopyMemory 
+      Caption         =   "CopyMem"
+      Height          =   435
+      Left            =   4680
+      TabIndex        =   9
+      Top             =   1260
+      Width           =   1155
+   End
    Begin VB.CommandButton btnCArray 
-      Caption         =   "CArray"
+      Caption         =   "CHashTable"
       Height          =   375
       Left            =   3900
       TabIndex        =   8
       Top             =   600
-      Width           =   915
+      Width           =   1035
    End
    Begin VB.CommandButton Command1 
       Caption         =   "77"
@@ -97,7 +105,10 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-
+Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" ( _
+     ByVal Destination As Long, _
+     ByVal Source As Long, _
+     ByVal Length As Long)
 Private mF As New cFile
 
 Private Sub btnArray_Click()
@@ -106,7 +117,7 @@ Private Sub btnArray_Click()
   Dim ah As New ArrayHelper
   aString = ah.StringArray("we are the world", "man in the mirror", "dangerous")
   bInteger = ah.IntegerArray(1, 2, 3, 4, 5)
-  Stop
+
 End Sub
 
 Private Sub btnCArray_Click()
@@ -115,6 +126,16 @@ Private Sub btnCArray_Click()
   arr.Add "sunrui8", "love"
   MsgBox arr.Item("sunrui") & arr.Item("sunrui8")
   
+End Sub
+
+Private Sub btnCopyMemory_Click()
+  Dim h As New ArrayHelper
+  Dim a() As String
+  Dim b() As String
+  Dim c() As String
+  a = h.StringArray("we are the world", "beat it")
+  b = h.StringArray("heal the world", "man in the mirror")
+  Stop
 End Sub
 
 Private Sub btnNewTable_Click()
