@@ -17,7 +17,6 @@ Class=CFile; CFile.cls
 Class=AudioPlay; AudioPlay.cls
 Class=ArrayHelper; ArrayHelper.cls
 Class=DbCreateHelper; DbCreateHelper.cls
-Class=Class1; Class1.cls
 Class=ClassBase; ClassBase.cls
 Class=CHashTable; CHashTable.cls
 Startup="Form1"
