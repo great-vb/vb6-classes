@@ -2,4 +2,6 @@
 *.exe
 # avoid error log file
 *.log
+# avoid txt file
+*.txt
 

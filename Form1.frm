@@ -18,6 +18,14 @@ Begin VB.Form Form1
    ScaleHeight     =   3090
    ScaleWidth      =   5925
    StartUpPosition =   3  '´°¿ÚÈ±Ê¡
+   Begin VB.CommandButton btnSunSoftLib 
+      Caption         =   "TestLib"
+      Height          =   375
+      Left            =   4680
+      TabIndex        =   10
+      Top             =   1740
+      Width           =   1155
+   End
    Begin VB.CommandButton btnCopyMemory 
       Caption         =   "CopyMem"
       Height          =   435
@@ -131,10 +139,10 @@ End Sub
 Private Sub btnCopyMemory_Click()
   Dim h As New ArrayHelper
   Dim a() As String
-  Dim b() As String
+  Dim B() As String
   Dim c() As String
   a = h.StringArray("we are the world", "beat it")
-  b = h.StringArray("heal the world", "man in the mirror")
+  B = h.StringArray("heal the world", "man in the mirror")
   Stop
 End Sub
 
@@ -142,6 +150,29 @@ Private Sub btnNewTable_Click()
   Dim dbc As New DbCreateHelper
   dbc.SetDbFile "lover.mdb"
   dbc.CreateTable "Users", "id:integer,name:string,age:integer,school:string,profile:text,created_at:date"
+End Sub
+
+Private Sub btnSunSoftLib_Click()
+  'Call SunSoftLib_CaseHashTable
+  'Call SunSoftLib_CaseArray
+  Call SunSoftLib_CaseFile
+End Sub
+
+Private Sub SunSoftLib_CaseHashTable()
+  Dim ks As New SunSoft.CHashTable
+  ks.Add "sunr", 11
+  MsgBox ks.Item("sunr")
+End Sub
+
+Private Sub SunSoftLib_CaseArray()
+  Dim k() As String
+  Dim o As New SunSoft.ArrayHelper
+  k = o.StringArray("1", "2222")
+  Stop
+End Sub
+
+Private Sub SunSoftLib_CaseFile()
+  SunSoft.WriteToTextFile App.Path & "\s.txt", "we are the world" & vbCrLf & "love lives forever"
 End Sub
 
 Private Sub cmdAddNew_Click()
@@ -165,6 +196,7 @@ Private Sub Command1_Click()
   Set k = New ClassBase
   MsgBox k.Counts("123")
 End Sub
+
 
 Private Sub Form_Load()
   Call btnNewTable_Click
