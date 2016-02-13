@@ -169,6 +169,7 @@ Public Sub CreateTable(ByVal TableName As String, ByVal FieldNames As String)
   Dim fields() As String
   Dim field As String
   Dim i As Integer
+  Dim col As ADOX.Column
 
   If Len(m_ConnStr) <= 0 Then
     Err.Raise 105, , "[SunSoft]未指定数据库连接，请检查"
@@ -178,7 +179,17 @@ Public Sub CreateTable(ByVal TableName As String, ByVal FieldNames As String)
     tb.Name = TableName
     fields = Split(FieldNames, ",")
     For i = 0 To UBound(fields)
-      tb.Columns.Append Split(fields(i), ":")(0), m_FieldType(Split(fields(i), ":")(1))
+      Set col = New ADOX.Column
+      col.Name = Split(fields(i), ":")(0)
+      col.Type = m_FieldType(Split(fields(i), ":")(1))
+      If Split(fields(i), ":")(1) = "boolean" Then
+        col.Attributes = ADOX.ColumnAttributesEnum.adColFixed
+      Else
+        col.Attributes = ADOX.ColumnAttributesEnum.adColNullable
+      End If
+      
+      'tb.Columns.Append Split(fields(i), ":")(0), m_FieldType(Split(fields(i), ":")(1))
+      tb.Columns.Append col
     Next i
     'tb.Columns.Append "adBinary", adBinary
     'tb.Columns.Append "adBoolean", adBoolean
@@ -201,7 +212,7 @@ Public Sub CreateTable(ByVal TableName As String, ByVal FieldNames As String)
 End Sub
 
 Public Sub InitDbFromModels(ParamArray dbModels())
-  Dim model As DbModel
+  Dim model As DBModel
   Dim i As Integer
   For i = LBound(dbModels) To UBound(dbModels)
     Set model = dbModels(i)
