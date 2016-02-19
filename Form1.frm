@@ -18,6 +18,14 @@ Begin VB.Form Form1
    ScaleHeight     =   3090
    ScaleWidth      =   5925
    StartUpPosition =   3  '´°¿ÚÈ±Ê¡
+   Begin VB.CommandButton Command2 
+      Caption         =   "Command2"
+      Height          =   375
+      Left            =   5040
+      TabIndex        =   11
+      Top             =   240
+      Width           =   735
+   End
    Begin VB.CommandButton btnSunSoftLib 
       Caption         =   "TestLib"
       Height          =   375
@@ -117,7 +125,7 @@ Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" ( _
      ByVal Destination As Long, _
      ByVal Source As Long, _
      ByVal Length As Long)
-Private mF As New cFile
+Private mF As New CFile
 
 Private Sub btnArray_Click()
   Dim aString() As String
@@ -198,6 +206,13 @@ Private Sub Command1_Click()
 End Sub
 
 
+Private Sub Command2_Click()
+  Dim rq As New WebCode
+  Dim result As String
+  result = rq.GetHTMLCode("http://www.521xunlei.com")
+  txtOut.Text = result
+End Sub
+
 Private Sub Form_Load()
-  Call btnNewTable_Click
+  'Call btnNewTable_Click
 End Sub
