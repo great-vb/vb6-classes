@@ -11,29 +11,30 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+Private Declare Function WideCharToMultiByte Lib "kernel32" (ByVal CodePage As Long, ByVal dwFlags As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long, ByRef lpMultiByteStr As Any, ByVal cchMultiByte As Long, ByVal lpDefaultChar As String, ByVal lpUsedDefaultChar As Long) As Long
 Private WithEvents req As WinHttp.WinHttpRequest
 Attribute req.VB_VarHelpID = -1
 Private canGet As Boolean
+Private Const TIME_OUT = 5
 '说明：此代码类模块用于获取网页的源代码
 Private Function getHtmlStrGB(ByVal strURL As String) As String   '获取源码
-    On Error GoTo reStart
-reStart:
     DoEvents
     Dim stime As Date, ntime As Date
     Dim XmlHttp As Variant
     '"获取网页源码"
     Set XmlHttp = CreateObject("Microsoft.XMLHTTP")
     XmlHttp.Open "GET", strURL, True
-    XmlHttp.SetRequestHeader "If-Modified-Since", "0"
-    XmlHttp.Send
+    XmlHttp.setRequestHeader "If-Modified-Since", "0"
+    XmlHttp.send
     stime = Now '获取当前时间
-    While XmlHttp.ReadyState <> 4
+    While XmlHttp.readyState <> 4
         DoEvents
         ntime = Now '获取循环时间
-        If DateDiff("s", stime, ntime) > 10 Then getHtmlStrGB = "OutTime": Exit Function '判断超出3秒即超时退出过程
+        If DateDiff("s", stime, ntime) > TIME_OUT Then
+          Err.Raise 10001, , "[SunSoft]连接超时"
+        End If
     Wend
-    getHtmlStrGB = StrConv(XmlHttp.ResponseBody, vbUnicode)
-    If getHtmlStrGB = "" Then getHtmlStrGB = "OutTime"
+    getHtmlStrGB = StrConv(XmlHttp.responseBody, vbUnicode)
     Set XmlHttp = Nothing
     DoEvents
 End Function
@@ -104,9 +105,33 @@ Continued:
     Loop
     
     Utf8ToUnicode = Join(Buf, "")
- End Function
+End Function
+
+Public Function Post(ByVal url As String, ByVal data As String) As String
+  On Error Resume Next
+  DoEvents
+  Dim stime As Date, ntime As Date
+  Dim XmlHttp As Variant
+  '"获取网页源码"
+  Set XmlHttp = CreateObject("Microsoft.XMLHTTP")
+  XmlHttp.Open "POST", url, True
+  XmlHttp.setRequestHeader "If-Modified-Since", "0"
+  XmlHttp.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
+  XmlHttp.send data
+  stime = Now '获取当前时间
+  While XmlHttp.readyState <> 4
+    DoEvents
+    ntime = Now '获取循环时间
+    If DateDiff("s", stime, ntime) > TIME_OUT Then
+      Err.Raise 10001, , "[SunSoft]连接超时"
+    End If
+  Wend
+  Post = StrConv(XmlHttp.responseBody, vbUnicode)
+  Set XmlHttp = Nothing
+  DoEvents
+End Function
+
 Private Function getHtmlStrUTF(ByVal strURL As String) As String   '获取源码
-    On Error GoTo reStart
     Dim smt() As Byte
 
     DoEvents
@@ -115,28 +140,27 @@ Private Function getHtmlStrUTF(ByVal strURL As String) As String   '获取源码
     ' St "获取网页源码"
     Set XmlHttp = CreateObject("Microsoft.XMLHTTP")
     XmlHttp.Open "GET", strURL, True
-    XmlHttp.SetRequestHeader "If-Modified-Since", "0"
-    XmlHttp.Send
+    XmlHttp.setRequestHeader "If-Modified-Since", "0"
+    XmlHttp.send
     stime = Now '获取当前时间
-    While XmlHttp.ReadyState <> 4
+    While XmlHttp.readyState <> 4
         DoEvents
         ntime = Now '获取循环时间
-        If DateDiff("s", stime, ntime) > 5 Then getHtmlStrUTF = "OutTime": Exit Function  '判断超出3秒即超时退出过程
+        If DateDiff("s", stime, ntime) > TIME_OUT Then
+          Err.Raise 10001, , "[SunSoft]连接超时"
+        End If
         DoEvents
     Wend
-    If LenB(XmlHttp.ResponseBody) > 0 Then
-        smt = XmlHttp.ResponseBody
+    If LenB(XmlHttp.responseBody) > 0 Then
+        smt = XmlHttp.responseBody
     Else
         getHtmlStrUTF = ""
         Exit Function
     End If
     getHtmlStrUTF = Utf8ToUnicode(smt)
-    If getHtmlStrUTF = "" Then getHtmlStrUTF = "OutTime"
     Set XmlHttp = Nothing
     DoEvents
     Exit Function
-reStart:
-    getHtmlStrUTF = ""
 End Function
 
 Public Function GetHTMLCode(ByVal url As String, Optional ByVal charset As String = "gb2312") As String
@@ -201,9 +225,9 @@ redo:
     Set req = New WinHttp.WinHttpRequest
     
     req.Open "GET", url, True
-    req.SetRequestHeader "If-Modified-Since", "0"
-    req.SetRequestHeader "User-Agent", "Mozilla/6.0"
-    req.Send
+    req.setRequestHeader "If-Modified-Since", "0"
+    req.setRequestHeader "User-Agent", "Mozilla/6.0"
+    req.send
     If req Is Nothing Then
         GoTo redo
     End If
@@ -212,13 +236,15 @@ redo:
     While canGet = False
         DoEvents
         ntime = Now '获取循环时间
-        If DateDiff("s", stime, ntime) > 5 Then GetHttpCodeUTF = "": Exit Function  '判断超出3秒即超时退出过程
+        If DateDiff("s", stime, ntime) > TIME_OUT Then
+          Err.Raise 10001, , "[SunSoft]连接超时"
+        End If
     Wend
     If req Is Nothing Then
         GoTo redo
     End If
-    If LenB(req.ResponseBody) > 0 Then
-        smt = req.ResponseBody
+    If LenB(req.responseBody) > 0 Then
+        smt = req.responseBody
     Else
         GetHttpCodeUTF = ""
         Exit Function
@@ -236,9 +262,9 @@ redo:
     Set req = New WinHttp.WinHttpRequest
 
     req.Open "GET", url, True
-    req.SetRequestHeader "If-Modified-Since", "0"
-    req.SetRequestHeader "User-Agent", "Mozilla/6.0"
-    req.Send
+    req.setRequestHeader "If-Modified-Since", "0"
+    req.setRequestHeader "User-Agent", "Mozilla/6.0"
+    req.send
     If req Is Nothing Then
         GoTo redo
     End If
@@ -247,13 +273,15 @@ redo:
     While canGet = False
         DoEvents
         ntime = Now '获取循环时间
-        If DateDiff("s", stime, ntime) > 5 Then GetHttpCodeGB = "": Exit Function  '判断超出3秒即超时退出过程
+        If DateDiff("s", stime, ntime) > TIME_OUT Then
+          Err.Raise 10001, , "[SunSoft]连接超时"
+        End If
     Wend
     If req Is Nothing Then
         GoTo redo
     End If
-    If LenB(req.ResponseBody) > 0 Then
-        GetHttpCodeGB = StrConv(req.ResponseBody, vbUnicode)
+    If LenB(req.responseBody) > 0 Then
+        GetHttpCodeGB = StrConv(req.responseBody, vbUnicode)
     Else
         GetHttpCodeGB = ""
     End If
@@ -269,4 +297,82 @@ Private Sub req_OnResponseFinished()
     canGet = True
 End Sub
 
+Public Function URLEncode(ByVal strParameter As String) As String
+  
+  Dim s As String
+  Dim i As Integer
+  Dim intValue As Integer
+    
+  Dim TmpData() As Byte
+  
+  s = ""
+  TmpData = StrConv(strParameter, vbFromUnicode)
+  For i = 0 To UBound(TmpData)
+    intValue = TmpData(i)
+    If (intValue >= 48 And intValue <= 57) Or _
+      (intValue >= 65 And intValue <= 90) Or _
+      (intValue >= 97 And intValue <= 122) Then
+      s = s & Chr(intValue)
+    ElseIf intValue = 32 Then
+      s = s & "+"
+    Else
+      s = s & "%" & Hex(intValue)
+    End If
+  Next i
+  URLEncode = s
+  
+End Function
 
+Public Function Utf8UrlEncode(ByVal text As String) As String
+  Dim utf8Code As String
+  utf8Code = UnicodeToUtf8(text)
+  Utf8UrlEncode = URLEncode(utf8Code)
+End Function
+
+Public Function UnicodeToUtf8(ByVal UCS As String) As Byte()
+    Dim lLength As Long
+    Dim lBufferSize As Long
+    Dim lResult As Long
+    Dim abUTF8() As Byte
+    lLength = Len(UCS)
+    If lLength = 0 Then Exit Function
+    lBufferSize = lLength * 3 + 1
+    ReDim abUTF8(lBufferSize - 1)
+    lResult = WideCharToMultiByte(CP_UTF8, 0, StrPtr(UCS), lLength, abUTF8(0), lBufferSize, vbNullString, 0)
+    If lResult <> 0 Then
+    lResult = lResult - 1
+    ReDim Preserve abUTF8(lResult)
+    UnicodeToUtf8 = abUTF8
+    End If
+End Function
+
+Public Function UTF8_URLEncoding(ByVal szInput As String)
+    Dim wch As String, uch As String, szRet As String
+    Dim x As Long
+    Dim nAsc As Long, nAsc2 As Long, nAsc3 As Long
+    If szInput = "" Then
+        UTF8_URLEncoding = szInput
+        Exit Function
+    End If
+    For x = 1 To Len(szInput)
+        wch = Mid(szInput, x, 1)
+        nAsc = AscW(wch)
+       
+        If nAsc < 0 Then nAsc = nAsc + 65536
+       
+        If (nAsc And &HFF80) = 0 Then
+            szRet = szRet & wch
+        Else
+            If (nAsc And &HF000) = 0 Then
+                uch = "%" & Hex(((nAsc \ 2 ^ 6)) Or &HC0) & Hex(nAsc And &H3F Or &H80)
+                szRet = szRet & uch
+            Else
+                uch = "%" & Hex((nAsc \ 2 ^ 12) Or &HE0) & "%" & _
+                Hex((nAsc \ 2 ^ 6) And &H3F Or &H80) & "%" & _
+                Hex(nAsc And &H3F Or &H80)
+                szRet = szRet & uch
+            End If
+        End If
+    Next
+    UTF8_URLEncoding = szRet
+End Function
