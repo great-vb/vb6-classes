@@ -212,10 +212,5 @@ Public Sub CreateTable(ByVal TableName As String, ByVal FieldNames As String)
 End Sub
 
 Public Sub InitDbFromModels(ParamArray dbModels())
-  Dim model As DBModel
-  Dim i As Integer
-  For i = LBound(dbModels) To UBound(dbModels)
-    Set model = dbModels(i)
-    CreateTable model.TableName, model.TableFields
-  Next
+
 End Sub

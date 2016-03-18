@@ -1,6 +1,6 @@
 TextBoxHelper = -280, 90, 709, 454, C
 TimeTicker = 0, 0, 0, 0, C
-Form1 = 43, 137, 1017, 621, , 22, 29, 512, 393, C
+Form1 = 62, 54, 1036, 538, , 22, 29, 512, 393, C
 AdodbHelper = 61, 74, 948, 514, C
 CEmail = 75, 75, 954, 508, C
 CRegExp = 52, 52, 939, 492, C
@@ -9,4 +9,5 @@ CFile = 50, 50, 945, 499, C
 ArrayHelper = 140, 117, 1019, 549, C
 DbCreateHelper = 89, 40, 968, 472, C
 ClassBase = 104, 104, 983, 536, C
-CHashTable = 25, 25, 1043, 595, C
+CHashTable = 25, 25, 1043, 595, 
+CString = 52, 52, 912, 484, 

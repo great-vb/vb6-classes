@@ -72,17 +72,14 @@ Option Explicit
 '------------------------------------------------------------------------------
 Private Const INIT_SIZE = 1024
 Private Const INIT_GAP_SIZE = 128
-
 '------------------------------------------------------------------------------
 '       私有数据类型
 '------------------------------------------------------------------------------
 Private Type ArrayElement
   IsTaken As Boolean
   Value As Variant
-  Key As String
+  key As String
 End Type
-
-
 '------------------------------------------------------------------------------
 '       私有变量
 '------------------------------------------------------------------------------
@@ -91,24 +88,19 @@ Private mCurrentSize As Long
 Private mArray() As ArrayElement
 Private mSize As Long
 Private mGapSize As Long
-
-
 '------------------------------------------------------------------------------
 '       属性变量
 '------------------------------------------------------------------------------
 
-
 '------------------------------------------------------------------------------
 '       私有API
 '------------------------------------------------------------------------------
-
 
 '//////////////////////////////////////////////////////////////////////////////
 '//
 '//      类
 '//
 '//////////////////////////////////////////////////////////////////////////////
-
 
 '------------------------------------------------------------------------------
 '       初始化
@@ -117,29 +109,23 @@ Private Sub Class_Initialize()
   resizeArray INIT_SIZE
   Me.GapSize = INIT_GAP_SIZE
 End Sub
-
-
 '------------------------------------------------------------------------------
 '       销毁
 '------------------------------------------------------------------------------
 Private Sub Class_Terminate()
 
 End Sub
-
-
 '//////////////////////////////////////////////////////////////////////////////
 '//
 '//      事件处理
 '//
 '//////////////////////////////////////////////////////////////////////////////
 
-
 '//////////////////////////////////////////////////////////////////////////////
 '//
 '//      私有属性
 '//
 '//////////////////////////////////////////////////////////////////////////////
-
 
 '//////////////////////////////////////////////////////////////////////////////
 '//
@@ -159,7 +145,6 @@ Private Sub rearangeArray()
   '【等待施工】
   'if data exists on 1,5,9,11,....so on,which means data are ranging almost randomly,
   'we need to call this sub to rearrange it
-  
 End Sub
 
 Private Sub expandArray()
@@ -179,7 +164,7 @@ MoveOn:
     Exit Function
   End If
 DirectExec:
-  If mArray(index).IsTaken = True And mArray(index).Key = keyword Then
+  If mArray(index).IsTaken = True And mArray(index).key = keyword Then
     findIndex = index
     Exit Function
   Else
@@ -210,7 +195,6 @@ DirectExec:
     GoTo MoveOn
   End If
 End Function
-
 
 Private Function calcInitIndex(ByVal keyword As String) As Long
   Dim index As Long, i As Long
@@ -257,43 +241,41 @@ Private Function UTF8_URLEncoding(ByVal szInput As String)
   UTF8_URLEncoding = szRet
 End Function
 
-Public Function UTF8_UrlDecode(ByVal URL As String)
-    Dim B, ub   ''中文字的Unicode码(2字节)
-    Dim UtfB    ''Utf-8单个字节
-    Dim UtfB1, UtfB2, UtfB3 ''Utf-8码的三个字节
-    Dim i, n, s
-    n = 0
-    ub = 0
-    For i = 1 To Len(URL)
-        B = Mid(URL, i, 1)
-        Select Case B
-            Case "+"
-                s = s & " "
-            Case "%"
-                ub = Mid(URL, i + 1, 2)
-                UtfB = CInt("&H" & ub)
-                If UtfB < 128 Then
-                    i = i + 2
-                    s = s & ChrW(UtfB)
-                Else
-                    UtfB1 = (UtfB And &HF) * &H1000   ''取第1个Utf-8字节的二进制后4位
-                    UtfB2 = (CInt("&H" & Mid(URL, i + 4, 2)) And &H3F) * &H40      ''取第2个Utf-8字节的二进制后6位
-                    UtfB3 = CInt("&H" & Mid(URL, i + 7, 2)) And &H3F      ''取第3个Utf-8字节的二进制后6位
-                    s = s & ChrW(UtfB1 Or UtfB2 Or UtfB3)
-                    i = i + 8
-                End If
-            Case Else    ''Ascii码
-                s = s & B
-        End Select
-    Next
-    UTF8_UrlDecode = s
+Private Function UTF8_UrlDecode(ByVal URL As String)
+  Dim SingleWord As String, UtfBStr As String   ''中文字的Unicode码(2字节)
+  Dim UtfB As Byte    ''Utf-8单个字节
+  Dim UtfB1 As Long, UtfB2 As Long, UtfB3 As Long ''Utf-8码的三个字节
+  Dim i As Long, OriginUrl As String
+
+  For i = 1 To Len(URL)
+    SingleWord = Mid(URL, i, 1)
+    Select Case SingleWord
+      Case "+"
+        OriginUrl = OriginUrl & " "
+      Case "%"
+        UtfBStr = Mid(URL, i + 1, 2)
+        UtfB = CInt("&H" & UtfBStr)
+        If UtfB < 128 Then
+          i = i + 2
+          OriginUrl = OriginUrl & ChrW(UtfB)
+        Else
+          UtfB1 = CLng(UtfB And &HF) * &H1000   ''取第1个Utf-8字节的二进制后4位
+          UtfB2 = (CInt("&H" & Mid(URL, i + 4, 2)) And &H3F) * &H40      ''取第2个Utf-8字节的二进制后6位
+          UtfB3 = CInt("&H" & Mid(URL, i + 7, 2)) And &H3F      ''取第3个Utf-8字节的二进制后6位
+          OriginUrl = OriginUrl & ChrW(UtfB1 Or UtfB2 Or UtfB3)
+          i = i + 8
+        End If
+      Case Else    ''Ascii码
+        OriginUrl = OriginUrl & SingleWord
+    End Select
+  Next
+  UTF8_UrlDecode = OriginUrl
 End Function
 '//////////////////////////////////////////////////////////////////////////////
 '//
 '//      继承实现
 '//
 '//////////////////////////////////////////////////////////////////////////////
-
 
 '//////////////////////////////////////////////////////////////////////////////
 '//
@@ -312,8 +294,6 @@ Property Let GapSize(ByVal newValue As Long)
   End If
   mGapSize = newValue
 End Property
-
-
 '//////////////////////////////////////////////////////////////////////////////
 '//
 '//      公有方法
@@ -322,29 +302,46 @@ End Property
 Public Function ToURLParams(ParamArray Params()) As String
   Dim param As Variant
   Dim encodedURL As String
-  For Each param In Params
-    If encodedURL = "" Then
-      encodedURL = param & "=" & UTF8_URLEncoding(Item(param))
-    Else
-      encodedURL = encodedURL & "&" & param & "=" & UTF8_URLEncoding(Item(param))
-    End If
-  Next
+  Dim m_Key As String, m_Value As String
+  Dim i As Long
+  If UBound(Params) = -1 Then
+    For i = 1 To UBound(mArray)
+      If mArray(i).IsTaken = True Then
+        m_Key = mArray(i).key
+        m_Value = mArray(i).Value
+        If encodedURL = "" Then
+          encodedURL = m_Key & "=" & UTF8_URLEncoding(m_Value)
+        Else
+          encodedURL = encodedURL & "&" & m_Key & "=" & UTF8_URLEncoding(m_Value)
+        End If
+      End If
+    Next i
+  Else
+    For Each param In Params
+      If encodedURL = "" Then
+        encodedURL = param & "=" & UTF8_URLEncoding(Item(param))
+      Else
+        encodedURL = encodedURL & "&" & param & "=" & UTF8_URLEncoding(Item(param))
+      End If
+    Next
+  End If
+
   ToURLParams = encodedURL
 End Function
 
-Public Sub Add(ByVal Key As String, ByVal Value As Variant)
+Public Sub Add(ByVal key As String, ByVal Value As Variant)
   Dim index As Long
   
-  If findIndex(Key) > 0 Then
+  If findIndex(key) > 0 Then
     Err.Raise 1002, , "[SunSoft]关键字重复，无法添加"
   End If
-  index = findFreeIndex(Key)
+  index = findFreeIndex(key)
   If index < 0 Then
     Call expandArray
-    index = findFreeIndex(Key)
+    index = findFreeIndex(key)
   End If
   mArray(index).IsTaken = True
-  mArray(index).Key = Key
+  mArray(index).key = key
   mArray(index).Value = Value
 End Sub
 

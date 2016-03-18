@@ -17,6 +17,7 @@ Class=ArrayHelper; ArrayHelper.cls
 Class=DbCreateHelper; DbCreateHelper.cls
 Class=ClassBase; ClassBase.cls
 Class=CHashTable; CHashTable.cls
+Class=CString; CString.cls
 Startup="Form1"
 HelpFile=""
 ExeName32="类库构建项目.exe"

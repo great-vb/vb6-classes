@@ -18,6 +18,22 @@ Begin VB.Form Form1
    ScaleHeight     =   3090
    ScaleWidth      =   5925
    StartUpPosition =   3  '´°¿ÚÈ±Ê¡
+   Begin VB.CommandButton Command3 
+      Caption         =   "Command3"
+      Height          =   375
+      Left            =   4680
+      TabIndex        =   13
+      Top             =   2640
+      Width           =   975
+   End
+   Begin VB.CommandButton btnEncode 
+      Caption         =   "URLDecode"
+      Height          =   375
+      Left            =   4680
+      TabIndex        =   12
+      Top             =   2160
+      Width           =   1095
+   End
    Begin VB.CommandButton Command2 
       Caption         =   "Command2"
       Height          =   375
@@ -136,14 +152,6 @@ Private Sub btnArray_Click()
 
 End Sub
 
-Private Sub btnCArray_Click()
-  Dim arr As New CArray
-  arr.Add "sunrui", 26
-  arr.Add "sunrui8", "love"
-  MsgBox arr.Item("sunrui") & arr.Item("sunrui8")
-  
-End Sub
-
 Private Sub btnCopyMemory_Click()
   Dim h As New ArrayHelper
   Dim a() As String
@@ -152,6 +160,11 @@ Private Sub btnCopyMemory_Click()
   a = h.StringArray("we are the world", "beat it")
   B = h.StringArray("heal the world", "man in the mirror")
   Stop
+End Sub
+
+Private Sub btnEncode_Click()
+  Dim cs As New CString
+  txtOut.text = cs.UTF8_UrlDecode("Boolean%e6%95%b0%e6%8d%ae%e7%b1%bb%e5%9e%8b+Boolean+%e5%8f%98%e9%87%8f%e5%ad%98%e5%82%a8%e4%b8%ba+16+%e4%bd%8d%ef%bc%882+%e4%b8%aa%e5%ad%97%e8%8a%82%ef%bc%89%e7%9a%84%e6%95%b0%e5%80%bc%e5%bd%a2%e5%bc%8f")
 End Sub
 
 Private Sub btnNewTable_Click()
@@ -167,16 +180,11 @@ Private Sub btnSunSoftLib_Click()
 End Sub
 
 Private Sub SunSoftLib_CaseHashTable()
-  Dim ks As New SunSoft.CHashTable
-  ks.Add "sunr", 11
-  MsgBox ks.Item("sunr")
+
 End Sub
 
 Private Sub SunSoftLib_CaseArray()
-  Dim k() As String
-  Dim o As New SunSoft.ArrayHelper
-  k = o.StringArray("1", "2222")
-  Stop
+
 End Sub
 
 Private Sub SunSoftLib_CaseFile()
@@ -196,7 +204,7 @@ Private Sub cmdDelFile_Click()
 End Sub
 
 Private Sub cmdReadFile_Click()
-    txtOut.Text = mF.ReadTextFile("1.txt")
+    txtOut.text = mF.ReadTextFile("1.txt")
 End Sub
 
 Private Sub Command1_Click()
@@ -210,7 +218,12 @@ Private Sub Command2_Click()
   Dim rq As New WebCode
   Dim result As String
   result = rq.GetHTMLCode("http://www.521xunlei.com")
-  txtOut.Text = result
+  txtOut.text = result
+End Sub
+
+Private Sub Command3_Click()
+  Dim st As String
+  
 End Sub
 
 Private Sub Form_Load()
