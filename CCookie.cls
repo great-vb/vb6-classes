@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "CFile"
+Attribute VB_Name = "CCookie"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -80,7 +80,7 @@ Option Explicit
 '------------------------------------------------------------------------------
 '       私有变量
 '------------------------------------------------------------------------------
-
+Private cookies As New CHashTable
 
 '------------------------------------------------------------------------------
 '       属性变量
@@ -90,21 +90,7 @@ Option Explicit
 '------------------------------------------------------------------------------
 '       私有API
 '------------------------------------------------------------------------------
-Private Declare Function PathFileExists _
-                Lib "shlwapi.dll" _
-                Alias "PathFileExistsA" (ByVal pszPath As String) As Boolean
 
-Private Declare Function ShellExecute _
-                Lib "shell32.dll" _
-                Alias "ShellExecuteA" (ByVal hwnd As Long, _
-                                       ByVal lpOperation As String, _
-                                       ByVal lpFile As String, _
-                                       ByVal lpParameters As String, _
-                                       ByVal lpDirectory As String, _
-                                       ByVal nShowCmd As Long) As Long
-Private Declare Function DeleteFile _
-                Lib "kernel32" _
-                Alias "DeleteFileA" (ByVal lpFileName As String) As Long
 
 '//////////////////////////////////////////////////////////////////////////////
 '//
@@ -117,6 +103,7 @@ Private Declare Function DeleteFile _
 '       初始化
 '------------------------------------------------------------------------------
 Private Sub Class_Initialize()
+    '
 End Sub
 
 
@@ -124,6 +111,7 @@ End Sub
 '       销毁
 '------------------------------------------------------------------------------
 Private Sub Class_Terminate()
+    '
 End Sub
 
 
@@ -167,106 +155,31 @@ End Sub
 '//      公有方法
 '//
 '//////////////////////////////////////////////////////////////////////////////
-Public Function WriteToTextFile(ByVal FilePath As String, _
-                                ByVal Content As String) As Boolean
 
-  On Error Resume Next
-
-  Dim fileId As Long
-
-  fileId = FreeFile
-
-  If PathFileExists(FilePath) Then
-    Open FilePath For Append As fileId
-  Else
-    Open FilePath For Output As fileId
-  End If
-
-  Print #fileId, Content;
-  Close fileId
-
-  If Err.Number > 0 Then
-    WriteToTextFile = False
-    Err.Clear
-  Else
-    WriteToTextFile = True
-  End If
-
-End Function
-
-Public Function OverWriteToTextFile(ByVal filePath As String, _
-                                ByVal Content As String) As Boolean
-    On Error Resume Next
-
-    Dim fileId As Long
-
-    fileId = freeFile
-
-    Open filePath For Output As fileId
-      Print #fileId, Content;
-    Close fileId
-
-    If Err.Number > 0 Then
-        OverWriteToTextFile = False
-        Err.Clear
-    Else
-        OverWriteToTextFile = True
+Public Function ReadHeaders(ByVal ResponseHeader As String) As Boolean
+  Dim headers() As String, i As Long, header As String, oneCookie As String
+  Dim cookieName As String, cookieValue As String
+  headers = Split(ResponseHeader, vbCrLf)
+  For i = 0 To UBound(headers)
+    header = headers(i)
+    'process header
+    If InStr(1, header, "Set-Cookie") > 0 Then
+      oneCookie = Split(header, "Set-Cookie:")(1)
+      oneCookie = Split(oneCookie, ";")(0)
+      cookieName = Trim(Split(oneCookie, "=")(0))
+      cookieValue = Trim(Split(oneCookie, "=")(1)) & ";"
+      cookies.Item(cookieName) = cookieValue
     End If
-
+  Next i
+  ReadHeaders = True
 End Function
 
-Public Function WriteLineToTextFile(ByVal filePath As String, _
-                                    ByVal Content As String) As Boolean
-  WriteLineToTextFile = WriteToTextFile(FilePath, vbCrLf & Content)
+Public Function SelectCookies(ByVal CookieNames As String) As String
+  Dim cookieNameArr() As String, i As Long
+  Dim cookieStr As String
+  cookieNameArr = Split(CookieNames, ",")
+  For i = 0 To UBound(cookieNameArr)
+    cookieStr = cookieStr & cookieNameArr(i) & "=" & cookies.Item(cookieNameArr(i))
+  Next i
+  SelectCookies = cookieStr
 End Function
-
-Public Function ReadTextFile(ByVal FilePath As String) As String
-
-  Dim fileId As Long
-
-  Dim fBin() As Byte
-
-  Dim fSize  As Long
-
-  fileId = FreeFile
-
-  If FileExists(FilePath) = False Then
-    Err.Raise 100, , "文件不存在！"
-  End If
-  
-  fSize = FileLen(FilePath)
-  ReDim fBin(fSize - 1)
-  
-  Open FilePath For Binary Access Read As fileId
-    Get #fileId, , fBin
-  Close fileId
-
-  If Err.Number > 0 Then
-    MsgBox Err.Description
-    ReadTextFile = ""
-  Else
-    ReadTextFile = StrConv(fBin, vbUnicode)
-  End If
-
-End Function
-
-Public Function FileExists(ByVal FilePath As String) As Boolean
-  FileExists = PathFileExists(FilePath)
-End Function
-
-Public Sub Delete(ByVal FilePath As String)
-  If FileExists(FilePath) Then
-    If DeleteFile(FilePath) = 0 Then
-      Err.Raise 11, , "文件删除错误！"
-    End If
-  Else
-    Err.Raise 12, , "文件路径不存在！"
-  End If
-End Sub
-
-Public Sub Touch(ByVal filePath As String)
-  Dim fileNo As Integer
-  fileNo = freeFile
-  Open filePath For Random As fileNo
-  Close fileNo
-End Sub

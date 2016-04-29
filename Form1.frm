@@ -222,8 +222,15 @@ Private Sub Command2_Click()
 End Sub
 
 Private Sub Command3_Click()
-  Dim st As String
-  
+  Dim lst As New CList, arr() As String
+  lst.Add "w"
+  lst.Add "love"
+  lst.Add "am loving you"
+  arr = lst.ToArray
+  Debug.Print lst.WrapJoin(",", "'")
+  lst.Clear
+  lst.Add "sb"
+  Debug.Print lst.WrapJoin(",", "'")
 End Sub
 
 Private Sub Form_Load()

@@ -7,7 +7,7 @@ BEGIN
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
 Attribute VB_Name = "DbCreateHelper"
-Attribute VB_GlobalNameSpace = False
+Attribute VB_GlobalNameSpace = True
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
@@ -212,5 +212,10 @@ Public Sub CreateTable(ByVal TableName As String, ByVal FieldNames As String)
 End Sub
 
 Public Sub InitDbFromModels(ParamArray dbModels())
-
+  Dim model As DBModel
+  Dim i As Integer
+  For i = LBound(dbModels) To UBound(dbModels)
+    Set model = dbModels(i)
+    CreateTable model.TableName, model.TableFields
+  Next
 End Sub

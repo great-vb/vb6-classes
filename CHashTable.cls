@@ -294,6 +294,38 @@ Property Let GapSize(ByVal newValue As Long)
   End If
   mGapSize = newValue
 End Property
+
+Public Property Get Count() As Long
+  Count = mCount
+End Property
+
+Public Property Get Item(ByVal key As String) As Variant
+  Dim index As Long
+  index = findIndex(key)
+  Item = mArray(index).Value
+End Property
+Public Property Let Item(ByVal key As String, Value As Variant)
+  Dim index As Long
+  
+  index = findIndex(key)
+  
+  If index > 0 Then
+    mArray(index).IsTaken = True
+    mArray(index).key = key
+    mArray(index).Value = Value
+    Exit Property
+  End If
+  index = findFreeIndex(key)
+  If index < 0 Then
+    Call expandArray
+    index = findFreeIndex(key)
+  End If
+  mCount = mCount + 1
+  mArray(index).IsTaken = True
+  mArray(index).key = key
+  mArray(index).Value = Value
+End Property
+
 '//////////////////////////////////////////////////////////////////////////////
 '//
 '//      公有方法
@@ -340,34 +372,10 @@ Public Sub Add(ByVal key As String, ByVal Value As Variant)
     Call expandArray
     index = findFreeIndex(key)
   End If
+  
+  mCount = mCount + 1
   mArray(index).IsTaken = True
   mArray(index).key = key
   mArray(index).Value = Value
 End Sub
 
-Public Property Get Item(ByVal key As String) As Variant
-  Dim index As Long
-  index = findIndex(key)
-  Item = mArray(index).Value
-End Property
-
-Public Property Let Item(ByVal key As String, Value As Variant)
-  Dim index As Long
-  
-  index = findIndex(key)
-  
-  If index > 0 Then
-    mArray(index).IsTaken = True
-    mArray(index).key = key
-    mArray(index).Value = Value
-    Exit Property
-  End If
-  index = findFreeIndex(key)
-  If index < 0 Then
-    Call expandArray
-    index = findFreeIndex(key)
-  End If
-  mArray(index).IsTaken = True
-  mArray(index).key = key
-  mArray(index).Value = Value
-End Property

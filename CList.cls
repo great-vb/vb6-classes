@@ -6,14 +6,14 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "CFile"
+Attribute VB_Name = "CList"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 '//////////////////////////////////////////////////////////////////////////////
-'@@summary
+'@@summary 支持简单的列表，支持特定类型
 '@@require
 '@@reference
 '@@license
@@ -70,7 +70,8 @@ Option Explicit
 '------------------------------------------------------------------------------
 '       私有常量
 '------------------------------------------------------------------------------
-
+Private Const INIT_SIZE = 1024
+Private Const INIT_GAP_SIZE = 128
 
 '------------------------------------------------------------------------------
 '       私有数据类型
@@ -80,7 +81,9 @@ Option Explicit
 '------------------------------------------------------------------------------
 '       私有变量
 '------------------------------------------------------------------------------
-
+Private mArr() As Variant
+Private mCount As Long
+Private mSize As Long
 
 '------------------------------------------------------------------------------
 '       属性变量
@@ -90,21 +93,7 @@ Option Explicit
 '------------------------------------------------------------------------------
 '       私有API
 '------------------------------------------------------------------------------
-Private Declare Function PathFileExists _
-                Lib "shlwapi.dll" _
-                Alias "PathFileExistsA" (ByVal pszPath As String) As Boolean
 
-Private Declare Function ShellExecute _
-                Lib "shell32.dll" _
-                Alias "ShellExecuteA" (ByVal hwnd As Long, _
-                                       ByVal lpOperation As String, _
-                                       ByVal lpFile As String, _
-                                       ByVal lpParameters As String, _
-                                       ByVal lpDirectory As String, _
-                                       ByVal nShowCmd As Long) As Long
-Private Declare Function DeleteFile _
-                Lib "kernel32" _
-                Alias "DeleteFileA" (ByVal lpFileName As String) As Long
 
 '//////////////////////////////////////////////////////////////////////////////
 '//
@@ -117,6 +106,9 @@ Private Declare Function DeleteFile _
 '       初始化
 '------------------------------------------------------------------------------
 Private Sub Class_Initialize()
+  mCount = 0
+  mSize = INIT_SIZE
+  ReDim mArr(1 To mSize)
 End Sub
 
 
@@ -124,6 +116,7 @@ End Sub
 '       销毁
 '------------------------------------------------------------------------------
 Private Sub Class_Terminate()
+
 End Sub
 
 
@@ -146,7 +139,10 @@ End Sub
 '//      私有方法
 '//
 '//////////////////////////////////////////////////////////////////////////////
-
+Private Sub resize()
+  mSize = mSize + INIT_GAP_SIZE
+  ReDim Preserve mArr(1 To mSize)
+End Sub
 
 '//////////////////////////////////////////////////////////////////////////////
 '//
@@ -160,113 +156,100 @@ End Sub
 '//      公有属性
 '//
 '//////////////////////////////////////////////////////////////////////////////
+Public Property Get Item(ByVal index As Long) As Variant
+  If index > mCount Or index < 1 Then
+    Err.Raise 10032301, , "[SunSoft]索引超出范围"
+  End If
+  Item = mArr(index)
+End Property
 
+Public Property Let Item(ByVal index As Long, value As Variant)
+  If index > mCount Or index < 1 Then
+    Err.Raise 10032301, , "[SunSoft]索引超出范围"
+  End If
+  mArr(index) = value
+End Property
 
+Public Property Get Count() As Long
+  Count = mCount
+End Property
 '//////////////////////////////////////////////////////////////////////////////
 '//
 '//      公有方法
 '//
 '//////////////////////////////////////////////////////////////////////////////
-Public Function WriteToTextFile(ByVal FilePath As String, _
-                                ByVal Content As String) As Boolean
-
-  On Error Resume Next
-
-  Dim fileId As Long
-
-  fileId = FreeFile
-
-  If PathFileExists(FilePath) Then
-    Open FilePath For Append As fileId
-  Else
-    Open FilePath For Output As fileId
+Public Function Add(ByVal value As Variant) As CList
+  If mCount >= mSize Then
+    Call resize
   End If
-
-  Print #fileId, Content;
-  Close fileId
-
-  If Err.Number > 0 Then
-    WriteToTextFile = False
-    Err.Clear
-  Else
-    WriteToTextFile = True
-  End If
-
+  mCount = mCount + 1
+  mArr(mCount) = value
+  Set Add = Me
 End Function
 
-Public Function OverWriteToTextFile(ByVal filePath As String, _
-                                ByVal Content As String) As Boolean
-    On Error Resume Next
-
-    Dim fileId As Long
-
-    fileId = freeFile
-
-    Open filePath For Output As fileId
-      Print #fileId, Content;
-    Close fileId
-
-    If Err.Number > 0 Then
-        OverWriteToTextFile = False
-        Err.Clear
-    Else
-        OverWriteToTextFile = True
-    End If
-
-End Function
-
-Public Function WriteLineToTextFile(ByVal filePath As String, _
-                                    ByVal Content As String) As Boolean
-  WriteLineToTextFile = WriteToTextFile(FilePath, vbCrLf & Content)
-End Function
-
-Public Function ReadTextFile(ByVal FilePath As String) As String
-
-  Dim fileId As Long
-
-  Dim fBin() As Byte
-
-  Dim fSize  As Long
-
-  fileId = FreeFile
-
-  If FileExists(FilePath) = False Then
-    Err.Raise 100, , "文件不存在！"
+Public Function ToArray() As String()
+  Dim arr() As String, i As Long
+  
+  If mCount = 0 Then
+    ToArray = arr
+    Exit Function
   End If
   
-  fSize = FileLen(FilePath)
-  ReDim fBin(fSize - 1)
+  ReDim arr(mCount - 1)
+  For i = 0 To mCount - 1
+    arr(i) = CStr(mArr(i + 1))
+  Next i
+  ToArray = arr
+End Function
+
+Public Function Join(Optional ByVal Separator As String = "", Optional ByVal Start As Long = 1) As String
+  Dim joins As String, i As Long
   
-  Open FilePath For Binary Access Read As fileId
-    Get #fileId, , fBin
-  Close fileId
-
-  If Err.Number > 0 Then
-    MsgBox Err.Description
-    ReadTextFile = ""
-  Else
-    ReadTextFile = StrConv(fBin, vbUnicode)
+  If mCount = 0 Then
+    Join = ""
+    Exit Function
   End If
 
+  For i = Start To mCount
+    joins = joins & Separator & CStr(mArr(i))
+  Next i
+  
+  joins = Mid(joins, Len(Separator) + 1)
+  
+  Join = joins
 End Function
 
-Public Function FileExists(ByVal FilePath As String) As Boolean
-  FileExists = PathFileExists(FilePath)
-End Function
-
-Public Sub Delete(ByVal FilePath As String)
-  If FileExists(FilePath) Then
-    If DeleteFile(FilePath) = 0 Then
-      Err.Raise 11, , "文件删除错误！"
-    End If
-  Else
-    Err.Raise 12, , "文件路径不存在！"
+Public Function WrapJoin(Optional ByVal Separator As String = "", Optional ByVal Wraper As String = "", Optional ByVal Start As Long = 1) As String
+  Dim joins As String, i As Long
+  
+  If mCount = 0 Then
+    WrapJoin = ""
+    Exit Function
   End If
+
+  For i = Start To mCount
+    joins = joins & Separator & Wraper & CStr(mArr(i)) & Wraper
+  Next i
+  
+  joins = Mid(joins, Len(Separator) + 1)
+  
+  WrapJoin = joins
+End Function
+
+Public Sub Clear()
+  Call Class_Initialize
 End Sub
 
-Public Sub Touch(ByVal filePath As String)
-  Dim fileNo As Integer
-  fileNo = freeFile
-  Open filePath For Random As fileNo
-  Close fileNo
-End Sub
+Public Function LoadFromString(ByVal DataString As String, ByVal Delimiter As String) As CList
+  Dim mArr() As String, i As Long
+  Call Clear
+  If DataString = "" Then
+    Set LoadFromString = Me
+    Exit Function
+  End If
+  mArr = Split(DataString, Delimiter)
+  For i = 0 To UBound(mArr)
+    Add mArr(i)
+  Next i
+  Set LoadFromString = Me
+End Function

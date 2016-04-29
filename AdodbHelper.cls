@@ -197,6 +197,13 @@ Public Function ExecParamQuery(ByVal SqlStr As String, _
 
             Set Para = .CreateParameter(CStr(i), GetVarType(param), adParamInput, LenB(param))
             Para.Value = param
+            If VarType(param) = vbEmpty Then
+              Para.Size = 1
+            ElseIf VarType(param) = vbString Then
+              If LenB(param) = 0 Then
+                Para.Size = 1
+              End If
+            End If
             .Parameters.Append Para
         Next
 
@@ -294,6 +301,13 @@ Public Function ExecParamNonQuery(ByVal SqlStr As String, ParamArray Params()) A
 
             Set Para = .CreateParameter(CStr(i), GetVarType(param), adParamInput, LenB(param))
             Para.Value = param
+            If VarType(param) = vbEmpty Then
+              Para.Size = 1
+            ElseIf VarType(param) = vbString Then
+              If LenB(param) = 0 Then
+                Para.Size = 1
+              End If
+            End If
             .Parameters.Append Para
         Next
 
@@ -463,6 +477,10 @@ Public Function ExecQueryScalar(ByVal SqlStr As String) As Variant
     ReleaseRecordset tmpRes
 End Function
 
+Public Function SafeParam(ByVal value As String) As String
+  SafeParam = Replace(value, "'", "''")
+End Function
+
 '【内部方法】
 '打开数据库连接
 '<CSCM>
@@ -521,7 +539,7 @@ Private Function GetVarType(ByRef Value As Variant) As ADODB.DataTypeEnum
     Select Case VarType(Value)
 
         Case VbVarType.vbString
-            GetVarType = ADODB.DataTypeEnum.adVarChar
+            GetVarType = ADODB.DataTypeEnum.adVarWChar
 
         Case VbVarType.vbInteger
             GetVarType = ADODB.DataTypeEnum.adSmallInt
@@ -543,4 +561,3 @@ Private Function GetVarType(ByRef Value As Variant) As ADODB.DataTypeEnum
     End Select
 
 End Function
-
