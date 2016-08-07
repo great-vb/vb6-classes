@@ -80,6 +80,10 @@ Private Type ArrayElement
   Value As Variant
   key As String
 End Type
+
+Private Type DataPacker
+  arrays() As ArrayElement
+End Type
 '------------------------------------------------------------------------------
 '       к╫сп╠Да©
 '------------------------------------------------------------------------------
@@ -361,6 +365,22 @@ Public Function ToURLParams(ParamArray Params()) As String
   ToURLParams = encodedURL
 End Function
 
+Public Function ToArray() As String()
+  Dim dataArr() As String, i As Long, counter As Long
+  Dim m_Key As String, m_Value As String
+  ReDim dataArr(0 To Count - 1, 0 To 1)
+  For i = 1 To UBound(mArray)
+    If mArray(i).IsTaken = True Then
+      m_Key = mArray(i).key
+      m_Value = mArray(i).Value
+      dataArr(counter, 0) = m_Key
+      dataArr(counter, 1) = m_Value
+      counter = counter + 1
+    End If
+  Next i
+  ToArray = dataArr
+End Function
+
 Public Sub Add(ByVal key As String, ByVal Value As Variant)
   Dim index As Long
   
@@ -379,3 +399,31 @@ Public Sub Add(ByVal key As String, ByVal Value As Variant)
   mArray(index).Value = Value
 End Sub
 
+Public Sub SaveToFile(ByVal filePath As String)
+  On Error Resume Next
+  Dim fileNum As Long, data As DataPacker
+  data.arrays = mArray
+  fileNum = FreeFile
+  Kill filePath
+  Open filePath For Binary As #fileNum
+    Put #fileNum, , data
+  Close #fileNum
+End Sub
+
+Public Sub LoadFromFile(ByVal filePath As String)
+  On Error Resume Next
+  Dim fileNum As Long, data As DataPacker, i As Long
+  fileNum = FreeFile
+  Open filePath For Binary As #fileNum
+    Get #fileNum, , data
+  Close #fileNum
+  For i = 0 To UBound(data.arrays)
+    If data.arrays(i).IsTaken = True Then
+      Item(data.arrays(i).key) = data.arrays(i).Value
+    End If
+  Next i
+End Sub
+
+Public Function ExistKey(ByVal KeyName As String) As Boolean
+  ExistKey = findIndex(KeyName) > 0
+End Function
