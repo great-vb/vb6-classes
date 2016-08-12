@@ -15,6 +15,8 @@ Option Explicit
 '//////////////////////////////////////////////////////////////////////////////
 '@@summary
 '@@require
+'---Class:CHashTable.cls
+'---Import:Microsoft ActiveX Data Objects 2.8 Library
 '@@reference
 '@@license
 '@@author
