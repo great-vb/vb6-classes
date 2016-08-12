@@ -22,6 +22,7 @@ Option Explicit
 '@@author
 '@@create
 '@@modify
+'---20160812:create this class
 '//////////////////////////////////////////////////////////////////////////////
 
 
@@ -300,7 +301,7 @@ End Function
 
 Public Function ExecParamQuery(ByVal SQL As String, _
                                ParamArray Params()) As ADODB.Recordset
-  Dim mRes As New ADODB.Recordset
+  Dim mRes As ADODB.Recordset
   Dim mParamArr As Variant, mParam As Variant
   Dim i As Long
   
@@ -402,7 +403,7 @@ Public Function ExecNamedNonQuery(ByVal SQL As String, HashedParams As CHashTabl
   ExecNamedNonQuery = ExecParamNonQuery(SQL, mParams)
 End Function
 
-Public Function ExecCreateQuery(ByVal SQL As String) As Variant
+Public Function ExecCreate(ByVal SQL As String) As Variant
   Dim mRes As ADODB.Recordset
 
   Set m_Command = New ADODB.Command
@@ -416,16 +417,16 @@ Public Function ExecCreateQuery(ByVal SQL As String) As Variant
   m_Command.CommandText = "SELECT @@identity"
   Set mRes = m_Command.Execute
   If mRes.RecordCount > 0 Then
-    ExecCreateQuery = mRes.Fields(0).Value
+    ExecCreate = mRes.Fields(0).Value
   Else
-    ExecCreateQuery = Empty
+    ExecCreate = Empty
   End If
   Call CloseConn
   Set m_Command = Nothing
   Set mRes = Nothing
 End Function
 
-Public Function ExecParamCreateQuery(ByVal SQL As String, ParamArray Params()) As Variant
+Public Function ExecParamCreate(ByVal SQL As String, ParamArray Params()) As Variant
   Dim mParamArr As Variant, mParam As Variant
   Dim mRes As ADODB.Recordset
   Dim i As Long
@@ -460,48 +461,52 @@ Public Function ExecParamCreateQuery(ByVal SQL As String, ParamArray Params()) A
   m_Command.CommandText = "SELECT @@identity"
   Set mRes = m_Command.Execute
   If mRes.RecordCount > 0 Then
-    ExecParamCreateQuery = mRes.Fields(0).Value
+    ExecParamCreate = mRes.Fields(0).Value
   Else
-    ExecParamCreateQuery = Empty
+    ExecParamCreate = Empty
   End If
   Call CloseConn
   Set m_Command = Nothing
   Set mRes = Nothing
 End Function
 
-Public Function ExecNamedCreateQuery(ByVal SQL As String, HashedParams As CHashTable) As Variant
+Public Function ExecNamedCreate(ByVal SQL As String, HashedParams As CHashTable) As Variant
   Dim mParams() As Variant
   m_ProcessNameParams SQL, HashedParams, mParams
-  ExecNamedCreateQuery = ExecParamCreateQuery(SQL, mParams)
+  ExecNamedCreate = ExecParamCreate(SQL, mParams)
 End Function
 
-Public Function ExecQueryScalar(ByVal SQL As String) As Variant
+Public Function ExecScalar(ByVal SQL As String) As Variant
   Dim mRes As ADODB.Recordset
   
   Set mRes = ExecQuery(SQL)
   If mRes.RecordCount <= 0 Then
-    ExecQueryScalar = Empty
+    ExecScalar = Empty
   Else
-    ExecQueryScalar = mRes.Fields(0).Value
+    ExecScalar = mRes.Fields(0).Value
   End If
   Set mRes = Nothing
 End Function
 
-Public Function ExecParamQueryScalar(ByVal SQL As String, _
+Public Function ExecParamScalar(ByVal SQL As String, _
                                      ParamArray Params()) As Variant
   Dim mRes As ADODB.Recordset
-
+  
+  If VarType(Params(0)) = 8204 Then
+    Params = Params(0)
+  End If
+  
   Set mRes = ExecParamQuery(SQL, Params)
   If mRes.RecordCount <= 0 Then
-    Set ExecParamQueryScalar = Nothing
+    Set ExecParamScalar = Nothing
   Else
-    ExecParamQueryScalar = mRes.Fields(0).Value
+    ExecParamScalar = mRes.Fields(0).Value
   End If
   Set mRes = Nothing
 End Function
 
-Public Function ExecNamedQueryScalar(ByVal SQL As String, HashedParams As CHashTable) As Variant
+Public Function ExecNamedScalar(ByVal SQL As String, HashedParams As CHashTable) As Variant
   Dim mParams() As Variant
   m_ProcessNameParams SQL, HashedParams, mParams
-  ExecNamedQueryScalar = ExecParamQueryScalar(SQL, mParams)
+  ExecNamedScalar = ExecParamScalar(SQL, mParams)
 End Function
