@@ -179,7 +179,7 @@ Private Function m_ProcessNameParams(mSql As String, mDic As CHashTable, mParams
   For i = 1 To Len(mSql)
     mWord = Mid(mSql, i, 1)
     Select Case mWord
-      Case " ", ","
+      Case " ", ",", ")"
         mNewSql = mNewSql & mWord
         If mBeginParam Then
           ReDim Preserve mParams(mParamCount)
@@ -418,7 +418,7 @@ Public Function ExecCreateQuery(ByVal SQL As String) As Variant
   If mRes.RecordCount > 0 Then
     ExecCreateQuery = mRes.Fields(0).Value
   Else
-    ExecCreateQuery = Nothing
+    ExecCreateQuery = Empty
   End If
   Call CloseConn
   Set m_Command = Nothing
@@ -462,7 +462,7 @@ Public Function ExecParamCreateQuery(ByVal SQL As String, ParamArray Params()) A
   If mRes.RecordCount > 0 Then
     ExecParamCreateQuery = mRes.Fields(0).Value
   Else
-    ExecParamCreateQuery = Nothing
+    ExecParamCreateQuery = Empty
   End If
   Call CloseConn
   Set m_Command = Nothing
@@ -472,7 +472,7 @@ End Function
 Public Function ExecNamedCreateQuery(ByVal SQL As String, HashedParams As CHashTable) As Variant
   Dim mParams() As Variant
   m_ProcessNameParams SQL, HashedParams, mParams
-  Set ExecNamedCreateQuery = ExecParamCreateQuery(SQL, mParams)
+  ExecNamedCreateQuery = ExecParamCreateQuery(SQL, mParams)
 End Function
 
 Public Function ExecQueryScalar(ByVal SQL As String) As Variant
@@ -480,7 +480,7 @@ Public Function ExecQueryScalar(ByVal SQL As String) As Variant
   
   Set mRes = ExecQuery(SQL)
   If mRes.RecordCount <= 0 Then
-    Set ExecQueryScalar = Nothing
+    ExecQueryScalar = Empty
   Else
     ExecQueryScalar = mRes.Fields(0).Value
   End If
