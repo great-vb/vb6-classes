@@ -510,3 +510,66 @@ Public Function ExecNamedScalar(ByVal SQL As String, HashedParams As CHashTable)
   m_ProcessNameParams SQL, HashedParams, mParams
   ExecNamedScalar = ExecParamScalar(SQL, mParams)
 End Function
+
+'---------------------Table Structure
+Public Function Tables() As ADODB.Recordset
+  Dim mRes As ADODB.Recordset
+  
+  Call OpenConn
+  
+  Set mRes = m_Conn.OpenSchema(adSchemaTables)
+  mRes.ActiveConnection = Nothing
+  
+  Call CloseConn
+  Set Tables = mRes
+End Function
+
+Public Function UserTables() As ADODB.Recordset
+  Dim mRes As ADODB.Recordset
+  
+  Call OpenConn
+  
+  Set mRes = m_Conn.OpenSchema(adSchemaTables)
+  mRes.Filter = "table_type = 'TABLE'"
+  mRes.ActiveConnection = Nothing
+  
+  Call CloseConn
+  Set UserTables = mRes
+End Function
+
+Public Function Fields(ByVal TableName As String) As ADODB.Recordset
+  Dim mRes As ADODB.Recordset
+  
+  Call OpenConn
+  
+  Set mRes = m_Conn.OpenSchema(adSchemaColumns)
+  mRes.Filter = "table_name = '" & TableName & "'"
+  mRes.ActiveConnection = Nothing
+  
+  Call CloseConn
+  Set Fields = mRes
+End Function
+
+Public Function KeyField(ByVal TableName As String) As String
+  Dim mRes As ADODB.Recordset
+  Dim mKeyFieldName As String
+  
+  Call OpenConn
+  
+  Set mRes = m_Conn.OpenSchema(adSchemaIndexes)
+  mRes.Filter = "table_name = '" & TableName & "'"
+  mRes.ActiveConnection = Nothing
+  
+  Call CloseConn
+  
+  If mRes.RecordCount > 0 Then
+    mRes.MoveFirst
+    Do While Not mRes.EOF
+      If mRes.Fields("column_name").Value <> "" Then
+        mKeyFieldName = mRes.Fields("column_name").Value
+        Exit Do
+      End If
+    Loop
+  End If
+  KeyField = mKeyFieldName
+End Function
