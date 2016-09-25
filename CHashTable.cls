@@ -216,14 +216,14 @@ End Function
 
 Private Function UTF8_URLEncoding(ByVal szInput As String)
   Dim wch As String, uch As String, szRet As String
-  Dim x As Long
+  Dim X As Long
   Dim nAsc As Long, nAsc2 As Long, nAsc3 As Long
   If szInput = "" Then
     UTF8_URLEncoding = szInput
     Exit Function
   End If
-  For x = 1 To Len(szInput)
-    wch = Mid(szInput, x, 1)
+  For X = 1 To Len(szInput)
+    wch = Mid(szInput, X, 1)
     nAsc = AscW(wch)
     
     If nAsc < 0 Then nAsc = nAsc + 65536
@@ -306,7 +306,11 @@ End Property
 Public Property Get Item(ByVal key As String) As Variant
   Dim index As Long
   index = findIndex(key)
-  Item = mArray(index).Value
+  If index = -1 Then
+    Item = Empty
+  Else
+    Item = mArray(index).Value
+  End If
 End Property
 Public Property Let Item(ByVal key As String, Value As Variant)
   Dim index As Long
@@ -401,29 +405,60 @@ End Sub
 
 Public Sub SaveToFile(ByVal filePath As String)
   On Error Resume Next
-  Dim fileNum As Long, data As DataPacker
-  data.arrays = mArray
+  Dim fileNum As Long, Data As DataPacker
+  Data.arrays = mArray
   fileNum = FreeFile
   Kill filePath
   Open filePath For Binary As #fileNum
-    Put #fileNum, , data
+    Put #fileNum, , Data
   Close #fileNum
 End Sub
 
 Public Sub LoadFromFile(ByVal filePath As String)
   On Error Resume Next
-  Dim fileNum As Long, data As DataPacker, i As Long
+  Dim fileNum As Long, Data As DataPacker, i As Long
   fileNum = FreeFile
   Open filePath For Binary As #fileNum
-    Get #fileNum, , data
+    Get #fileNum, , Data
   Close #fileNum
-  For i = 0 To UBound(data.arrays)
-    If data.arrays(i).IsTaken = True Then
-      Item(data.arrays(i).key) = data.arrays(i).Value
+  For i = 0 To UBound(Data.arrays)
+    If Data.arrays(i).IsTaken = True Then
+      Item(Data.arrays(i).key) = Data.arrays(i).Value
     End If
   Next i
 End Sub
 
 Public Function ExistKey(ByVal KeyName As String) As Boolean
   ExistKey = findIndex(KeyName) > 0
+End Function
+
+Public Function Keys() As CList
+  Dim m_Key As String, m_Keys As New CList
+  Dim i As Long
+  For i = 1 To UBound(mArray)
+    If mArray(i).IsTaken = True Then
+      m_Key = mArray(i).key
+      m_Keys.Add "`" & m_Key & "`"
+    End If
+  Next i
+  Set Keys = m_Keys
+End Function
+
+Public Function Values() As CList
+  Dim m_Value As Variant
+  Dim m_Values As New CList
+  Dim i As Long
+  For i = 1 To UBound(mArray)
+    If mArray(i).IsTaken = True Then
+      m_Value = mArray(i).Value
+      If VarType(m_Value) = vbString Then
+        m_Values.Add m_Value
+      ElseIf VarType(m_Value) = vbDate Then
+        m_Values.Add "'#" & Format(m_Value, "yyyy-mm-dd hh:mm:ss") & "#'"
+      Else
+        m_Values.Add m_Value
+      End If
+    End If
+  Next i
+  Set Values = m_Values
 End Function

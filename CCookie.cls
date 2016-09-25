@@ -183,3 +183,7 @@ Public Function SelectCookies(ByVal CookieNames As String) As String
   Next i
   SelectCookies = cookieStr
 End Function
+
+Public Function GetCookie(ByVal CookieName As String) As String
+  GetCookie = cookies.Item(CookieName)
+End Function

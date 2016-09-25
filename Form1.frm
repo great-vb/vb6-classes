@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.Form Form1 
    Caption         =   "Form1"
-   ClientHeight    =   3090
+   ClientHeight    =   3660
    ClientLeft      =   60
    ClientTop       =   450
    ClientWidth     =   5925
@@ -15,9 +15,17 @@ Begin VB.Form Form1
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
-   ScaleHeight     =   3090
+   ScaleHeight     =   3660
    ScaleWidth      =   5925
    StartUpPosition =   3  '窗口缺省
+   Begin VB.CommandButton btnBindText 
+      Caption         =   "绑定文本"
+      Height          =   375
+      Left            =   120
+      TabIndex        =   14
+      Top             =   3120
+      Width           =   1095
+   End
    Begin VB.CommandButton Command3 
       Caption         =   "Command3"
       Height          =   375
@@ -137,6 +145,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+Private kt As ctTextBox
 Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" ( _
      ByVal Destination As Long, _
      ByVal Source As Long, _
@@ -150,6 +159,13 @@ Private Sub btnArray_Click()
   aString = ah.StringArray("we are the world", "man in the mirror", "dangerous")
   bInteger = ah.IntegerArray(1, 2, 3, 4, 5)
 
+End Sub
+
+Private Sub btnBindText_Click()
+  Set kt = New ctTextBox
+  kt.Bind txtOut
+  'kt.NumberOnly = True
+  kt.AllowCtrlF = True
 End Sub
 
 Private Sub btnCopyMemory_Click()
@@ -171,6 +187,10 @@ Private Sub btnNewTable_Click()
   Dim dbc As New DbCreateHelper
   dbc.SetDbFile "lover.mdb"
   dbc.CreateTable "Users", "id:integer,name:string,age:integer,school:string,profile:text,created_at:date"
+End Sub
+
+Private Sub btnReadMp4_Click()
+
 End Sub
 
 Private Sub btnSunSoftLib_Click()

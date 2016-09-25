@@ -153,7 +153,7 @@ Private Function m_ProcessNameParams(mSQL As String, mDic As CHashTable, mParams
   End If
   'return
   mSQL = mNewSql
-  m_ProcessNamemDic = True
+  m_ProcessNameParams = True
 End Function
 
 '【类方法】
@@ -226,7 +226,7 @@ End Function
 Public Function ExecNamedParamQuery(ByVal SqlStr As String, HashedParams As CHashTable) As ADODB.Recordset
   Dim mParams() As Variant
   m_ProcessNameParams SqlStr, HashedParams, mParams
-  Set ExecNamedParamQuery = ExecParamQuery(mNewSql, mParams)
+  Set ExecNamedParamQuery = ExecParamQuery(SqlStr, mParams)
 End Function
 
 '执行查询，返回影响行数
@@ -304,6 +304,92 @@ Public Function ExecParamNonQuery(ByVal SqlStr As String, ParamArray Params()) A
   Set m_Command = Nothing
   '返回影响行数
   ExecParamNonQuery = affectedRows
+End Function
+
+'执行参数化查询，返回创建的主键的值
+Public Function ExecCreateQuery(ByVal SqlStr As String) As Variant
+  Dim i            As Long
+  Dim affectedRows As Long
+  Dim res As ADODB.Recordset
+
+  Set m_Command = New ADODB.Command
+  '打开连接
+  Call OpenConn
+  m_Command.ActiveConnection = m_Conn
+  m_Command.CommandText = SqlStr
+  m_Command.CommandType = adCmdText
+
+  '获取执行后记录集
+  m_Command.Execute affectedRows
+  m_Command.CommandText = "SELECT @@identity"
+  Set res = m_Command.Execute
+  If res.RecordCount > 0 Then
+    ExecCreateQuery = res.Fields(0).Value
+  Else
+    ExecCreateQuery = Nothing
+  End If
+  '关闭数据库连接
+  Call CloseConn
+  '清空命令对象
+  Set m_Command = Nothing
+  '返回影响行数
+  ExecCreateQuery = ""
+End Function
+'执行命名参数化查询
+Public Function ExecNamedParamCreateQuery(ByVal SqlStr As String, HashedParams As CHashTable) As Variant
+  Dim mParams() As Variant
+  m_ProcessNameParams SqlStr, HashedParams, mParams
+  Set ExecNamedParamCreateQuery = ExecParamCreateQuery(SqlStr, mParams)
+End Function
+'执行参数化查询，返回影响行数
+Public Function ExecParamCreateQuery(ByVal SqlStr As String, ParamArray Params()) As Variant
+  Dim paramArr As Variant
+  Dim res As ADODB.Recordset
+
+  Set m_Command = New ADODB.Command
+  '打开连接
+  Call OpenConn
+  m_Command.ActiveConnection = m_Conn
+  m_Command.CommandText = SqlStr
+  m_Command.CommandType = adCmdText
+  '过滤嵌套情况
+  paramArr = Params
+  If VarType(Params(0)) = 8204 Then
+    paramArr = Params(0)
+  End If
+  '设置参数
+  With m_Command
+    For Each param In paramArr
+      Dim Para As ADODB.Parameter
+
+      Set Para = .CreateParameter(CStr(i), GetVarType(param), adParamInput, LenB(param))
+      Para.Value = param
+      If VarType(param) = vbEmpty Then
+        Para.Size = 1
+      ElseIf VarType(param) = vbString Then
+        If LenB(param) = 0 Then
+          Para.Size = 1
+        End If
+      End If
+      .Parameters.Append Para
+    Next
+  End With
+
+  '获取执行后记录集
+  m_Command.Execute affectedRows
+  '获取主键值
+  m_Command.CommandText = "SELECT @@identity"
+  Set res = m_Command.Execute
+  If res.RecordCount > 0 Then
+    ExecParamCreateQuery = res.Fields(0).Value
+  Else
+    ExecParamCreateQuery = Nothing
+  End If
+  Set res = Nothing
+  '关闭数据库连接
+  Call CloseConn
+  '清空命令对象
+  Set m_Command = Nothing
 End Function
 
 '根据文件路径设置连接字符串

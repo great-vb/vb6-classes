@@ -1,6 +1,5 @@
-TextBoxHelper = -280, 90, 709, 454, C
 TimeTicker = 0, 0, 0, 0, C
-Form1 = 66, 66, 1040, 550, , 22, 29, 512, 393, C
+Form1 = 66, 54, 1040, 538, C, 22, 29, 512, 393, C
 AdodbHelper = 61, 74, 948, 514, C
 CEmail = 75, 75, 954, 508, C
 CRegExp = 52, 52, 939, 492, C
@@ -11,5 +10,7 @@ DbCreateHelper = 89, 40, 968, 472, C
 ClassBase = 104, 104, 983, 536, C
 CHashTable = 25, 25, 802, 595, C
 CString = 34, 30, 894, 462, C
-CList = 67, 26, 927, 458, 
+CList = 67, 26, 927, 458, C
 DBModel = 0, 0, 0, 0, C
+clsMP4 = 126, 48, 1002, 480, C
+ctTextBox = 151, 97, 1027, 529, C

@@ -19,7 +19,7 @@ Option Explicit
 '---Import:Microsoft ActiveX Data Objects 2.8 Library
 '@@reference
 '@@license
-'@@author
+'@@author sunsoft
 '@@create
 '@@modify
 '---20160812:create this class
@@ -91,7 +91,7 @@ Private m_ConnString As String
 
 Private m_FilePath   As String
 
-Private m_Me         As New AdodbHelper
+Private m_AutoConnect As Boolean
 
 '------------------------------------------------------------------------------
 '       Property Variable
@@ -114,7 +114,9 @@ Private m_Me         As New AdodbHelper
 '       Initialize
 '------------------------------------------------------------------------------
 Private Sub Class_Initialize()
-    '
+  m_ConnString = ""
+  m_FilePath = ""
+  m_AutoConnect = True
 End Sub
 
 
@@ -283,18 +285,32 @@ End Sub
 Public Sub SetConnToAccdb(ByVal FilePath As String)
   m_ConnString = "Provider = Microsoft.ACE.OLEDB.12.0;Data Source=" & FilePath & ";Persist Security Info=False"
 End Sub
+
+Public Sub OpenDB()
+  m_AutoConnect = False
+  Call OpenConn
+End Sub
+
+Public Sub CloseDB()
+  m_AutoConnect = True
+  Call CloseConn
+End Sub
 '---------------------Querys
 Public Function ExecQuery(ByVal SQL As String) As ADODB.Recordset
   Dim mRes As New ADODB.Recordset
 
   Set m_Command = New ADODB.Command
-  Call OpenConn
+  If m_AutoConnect Then
+    Call OpenConn
+  End If
   m_Command.ActiveConnection = m_Conn
   m_Command.CommandText = SQL
   Set mRes = m_Command.Execute()
   'disconnect from database
   mRes.ActiveConnection = Nothing
-  Call CloseConn
+  If m_AutoConnect Then
+    Call CloseConn
+  End If
   Set ExecQuery = mRes
   Set m_Command = Nothing
 End Function
@@ -307,7 +323,9 @@ Public Function ExecParamQuery(ByVal SQL As String, _
   
   Set m_Command = New ADODB.Command
 
-  Call OpenConn
+  If m_AutoConnect Then
+    Call OpenConn
+  End If
   m_Command.ActiveConnection = m_Conn
   m_Command.CommandText = SQL
   m_Command.CommandType = adCmdText
@@ -336,7 +354,9 @@ Public Function ExecParamQuery(ByVal SQL As String, _
   
   Set mRes = m_Command.Execute()
   mRes.ActiveConnection = Nothing
-  Call CloseConn
+  If m_AutoConnect Then
+    Call CloseConn
+  End If
   Set ExecParamQuery = mRes
   Set m_Command = Nothing
 End Function
@@ -351,12 +371,16 @@ Public Function ExecNonQuery(ByVal SQL As String) As Long
   Dim affectedRows As Long
 
   Set m_Command = New ADODB.Command
-  Call OpenConn
+  If m_AutoConnect Then
+    Call OpenConn
+  End If
   m_Command.ActiveConnection = m_Conn
   m_Command.CommandText = SQL
   m_Command.CommandType = adCmdText
   m_Command.Execute affectedRows
-  Call CloseConn
+  If m_AutoConnect Then
+    Call CloseConn
+  End If
   Set m_Command = Nothing
   ExecNonQuery = affectedRows
 End Function
@@ -366,7 +390,9 @@ Public Function ExecParamNonQuery(ByVal SQL As String, ParamArray Params()) As L
   Dim mParamArr As Variant, mParam As Variant
 
   Set m_Command = New ADODB.Command
-  Call OpenConn
+  If m_AutoConnect Then
+    Call OpenConn
+  End If
   m_Command.ActiveConnection = m_Conn
   m_Command.CommandText = SQL
   m_Command.CommandType = adCmdText
@@ -392,7 +418,9 @@ Public Function ExecParamNonQuery(ByVal SQL As String, ParamArray Params()) As L
   End With
 
   m_Command.Execute affectedRows
-  Call CloseConn
+  If m_AutoConnect Then
+    Call CloseConn
+  End If
   Set m_Command = Nothing
   ExecParamNonQuery = affectedRows
 End Function
@@ -407,8 +435,9 @@ Public Function ExecCreate(ByVal SQL As String) As Variant
   Dim mRes As ADODB.Recordset
 
   Set m_Command = New ADODB.Command
-  Call OpenConn
-  
+  If m_AutoConnect Then
+    Call OpenConn
+  End If
   m_Command.ActiveConnection = m_Conn
   m_Command.CommandText = SQL
   m_Command.CommandType = adCmdText
@@ -421,7 +450,9 @@ Public Function ExecCreate(ByVal SQL As String) As Variant
   Else
     ExecCreate = Empty
   End If
-  Call CloseConn
+  If m_AutoConnect Then
+    Call CloseConn
+  End If
   Set m_Command = Nothing
   Set mRes = Nothing
 End Function
@@ -432,7 +463,9 @@ Public Function ExecParamCreate(ByVal SQL As String, ParamArray Params()) As Var
   Dim i As Long
 
   Set m_Command = New ADODB.Command
-  Call OpenConn
+  If m_AutoConnect Then
+    Call OpenConn
+  End If
   m_Command.ActiveConnection = m_Conn
   m_Command.CommandText = SQL
   m_Command.CommandType = adCmdText
@@ -465,7 +498,9 @@ Public Function ExecParamCreate(ByVal SQL As String, ParamArray Params()) As Var
   Else
     ExecParamCreate = Empty
   End If
-  Call CloseConn
+  If m_AutoConnect Then
+    Call CloseConn
+  End If
   Set m_Command = Nothing
   Set mRes = Nothing
 End Function
@@ -514,54 +549,58 @@ End Function
 '---------------------Table Structure
 Public Function Tables() As ADODB.Recordset
   Dim mRes As ADODB.Recordset
-  
-  Call OpenConn
-  
+  If m_AutoConnect Then
+    Call OpenConn
+  End If
   Set mRes = m_Conn.OpenSchema(adSchemaTables)
   mRes.ActiveConnection = Nothing
-  
-  Call CloseConn
+  If m_AutoConnect Then
+    Call CloseConn
+  End If
   Set Tables = mRes
 End Function
 
 Public Function UserTables() As ADODB.Recordset
   Dim mRes As ADODB.Recordset
-  
-  Call OpenConn
-  
+  If m_AutoConnect Then
+    Call OpenConn
+  End If
   Set mRes = m_Conn.OpenSchema(adSchemaTables)
   mRes.Filter = "table_type = 'TABLE'"
   mRes.ActiveConnection = Nothing
-  
-  Call CloseConn
+  If m_AutoConnect Then
+    Call CloseConn
+  End If
   Set UserTables = mRes
 End Function
 
 Public Function Fields(ByVal TableName As String) As ADODB.Recordset
   Dim mRes As ADODB.Recordset
-  
-  Call OpenConn
-  
+  If m_AutoConnect Then
+    Call OpenConn
+  End If
   Set mRes = m_Conn.OpenSchema(adSchemaColumns)
   mRes.Filter = "table_name = '" & TableName & "'"
+  mRes.Sort = "ORDINAL_POSITION ASC"
   mRes.ActiveConnection = Nothing
-  
-  Call CloseConn
+  If m_AutoConnect Then
+    Call CloseConn
+  End If
   Set Fields = mRes
 End Function
 
 Public Function KeyField(ByVal TableName As String) As String
   Dim mRes As ADODB.Recordset
   Dim mKeyFieldName As String
-  
-  Call OpenConn
-  
-  Set mRes = m_Conn.OpenSchema(adSchemaIndexes)
+  If m_AutoConnect Then
+    Call OpenConn
+  End If
+  Set mRes = m_Conn.OpenSchema(adSchemaPrimaryKeys)
   mRes.Filter = "table_name = '" & TableName & "'"
   mRes.ActiveConnection = Nothing
-  
-  Call CloseConn
-  
+  If m_AutoConnect Then
+    Call CloseConn
+  End If
   If mRes.RecordCount > 0 Then
     mRes.MoveFirst
     Do While Not mRes.EOF
@@ -573,3 +612,7 @@ Public Function KeyField(ByVal TableName As String) As String
   End If
   KeyField = mKeyFieldName
 End Function
+
+Public Sub ReleaseRecordset(Res As ADODB.Recordset)
+  Set Res = Nothing
+End Sub

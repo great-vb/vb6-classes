@@ -289,3 +289,49 @@ Public Sub CreateFolder(ByVal FilePath As String)
     End If
   Next i
 End Sub
+
+Public Sub SaveAsUtf8Bom(ByVal Text As String, ByVal FileName As String)
+  Const adTypeText = 2
+  Const adSaveCreateOverWrite = 2
+  Dim oStream As Variant
+  Set oStream = CreateObject("ADODB.Stream")
+  oStream.Open
+  oStream.charset = "UTF-8"
+  oStream.Type = adTypeText
+  oStream.WriteText Text
+  oStream.SaveToFile FileName, adSaveCreateOverWrite
+  oStream.Close
+  Set oStream = Nothing
+End Sub
+
+Public Sub SaveAsUTF8(ByVal Text As String, ByVal FileName As String)
+  Const adSaveCreateNotExist = 1
+  Const adSaveCreateOverWrite = 2
+  Const adTypeBinary = 1
+  Const adTypeText = 2
+  
+  Dim objStreamUTF8: Set objStreamUTF8 = CreateObject("ADODB.Stream")
+  Dim objStreamUTF8NoBOM: Set objStreamUTF8NoBOM = CreateObject("ADODB.Stream")
+  
+  With objStreamUTF8
+    .charset = "UTF-8"
+    .Open
+    .WriteText Text
+    .position = 0
+    .SaveToFile FileName, adSaveCreateOverWrite
+    .Type = adTypeBinary
+    .position = 3
+  End With
+  
+  With objStreamUTF8NoBOM
+    .Type = adTypeBinary
+    .Open
+    objStreamUTF8.CopyTo objStreamUTF8NoBOM
+    .SaveToFile FileName, adSaveCreateOverWrite
+  End With
+  
+  objStreamUTF8.Close
+  objStreamUTF8NoBOM.Close
+End Sub
+
+

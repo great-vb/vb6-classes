@@ -73,7 +73,7 @@ Private Function Utf8ToUnicode(ByRef Utf() As Byte) As String
   
   On Error GoTo 0
   
-  Dim i As Long, j As Long, k As Long, N As Long
+  Dim i As Long, j As Long, k As Long, n As Long
   Dim B As Byte, cnt As Byte
   Dim Buf() As String
   ReDim Buf(utfLen)
@@ -104,15 +104,15 @@ Private Function Utf8ToUnicode(ByRef Utf() As Byte) As String
         
     Select Case cnt
     Case 2
-        N = B And &H1F
+        n = B And &H1F
     Case 3
-        N = B And &HF
+        n = B And &HF
     Case 4
-        N = B And &H7
+        n = B And &H7
     Case 5
-        N = B And &H3
+        n = B And &H3
     Case 6
-        N = B And &H1
+        n = B And &H1
     Case Else
         Buf(j) = Chr(B)
         GoTo Continued:
@@ -120,12 +120,12 @@ Private Function Utf8ToUnicode(ByRef Utf() As Byte) As String
                 
         For k = 1 To cnt - 1
             B = Utf(i + k)
-            N = N * &H40 + (B And &H3F)
+            n = n * &H40 + (B And &H3F)
         Next
-        If N < -32768 Or N > 65535 Then
+        If n < -32768 Or n > 65535 Then
           Buf(j) = "?"
         Else
-          Buf(j) = ChrW(N)
+          Buf(j) = ChrW(n)
         End If
         
 Continued:
@@ -136,7 +136,7 @@ Continued:
   Utf8ToUnicode = Join(Buf, "")
 End Function
 
-Public Function Post(ByVal url As String, ByVal data As String) As String
+Public Function Post(ByVal url As String, ByVal Data As String) As String
   On Error Resume Next
   DoEvents
   Dim stime As Date, ntime As Date
@@ -146,7 +146,7 @@ Public Function Post(ByVal url As String, ByVal data As String) As String
   XmlHttp.Open "POST", url, True
   XmlHttp.SetRequestHeader "If-Modified-Since", "0"
   XmlHttp.SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-  XmlHttp.Send data
+  XmlHttp.Send Data
   stime = Now '获取当前时间
   While XmlHttp.readyState <> 4
     DoEvents
@@ -369,9 +369,9 @@ Public Function URLEncode(ByVal strParameter As String) As String
   
 End Function
 
-Public Function Utf8UrlEncode(ByVal text As String) As String
+Public Function Utf8UrlEncode(ByVal Text As String) As String
   Dim utf8Code As String
-  utf8Code = UnicodeToUtf8(text)
+  utf8Code = UnicodeToUtf8(Text)
   Utf8UrlEncode = URLEncode(utf8Code)
 End Function
 
